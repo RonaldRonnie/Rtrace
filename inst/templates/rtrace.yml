@@ -77,8 +77,17 @@ rules:
     severity: warning
     functions: {}
 
-  # Self-gated: only evaluates anything if the shiny package is actually
-  # imported somewhere in the project, so it's safe to leave on by default.
+  # These ecosystem.* rules are all self-gated: each only evaluates
+  # anything if the corresponding package is actually imported somewhere
+  # in the project, so it's safe to leave them on by default.
   - type: ecosystem.shinyStructure
+    enabled: true
+    severity: warning
+
+  - type: ecosystem.targetsStructure
+    enabled: true
+    severity: warning
+
+  - type: ecosystem.plumberStructure
     enabled: true
     severity: warning

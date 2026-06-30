@@ -45,6 +45,10 @@ default_config <- function() {
       list(type = "documentation.missing", enabled = FALSE, severity = "info",
            params = list()),
       list(type = "ecosystem.shinyStructure", enabled = TRUE, severity = "warning",
+           params = list()),
+      list(type = "ecosystem.targetsStructure", enabled = TRUE, severity = "warning",
+           params = list()),
+      list(type = "ecosystem.plumberStructure", enabled = TRUE, severity = "warning",
            params = list())
     )
   )

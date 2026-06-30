@@ -10,11 +10,12 @@ violation below is deliberate.
 
 ```
 research-pipeline/
-├── rtrace.yml                       # demo config: low thresholds so every rule fires
-├── R/utils.R                        # clean, documented, tested helpers (no violations)
-├── analysis/clean_data.R            # most of the intentional violations
-├── shiny_dashboard/helpers.R        # completes a circular layer dependency
-└── tests/testthat/test-utils.R      # covers R/utils.R only, on purpose
+├── rtrace.yml                          # demo config: low thresholds so every rule fires
+├── R/utils.R                           # clean, documented, tested helpers (no violations)
+├── analysis/clean_data.R               # most of the intentional violations
+├── analysis/pipeline_orchestration.R   # unfinished targets/plumber integration
+├── shiny_dashboard/helpers.R           # completes a circular layer dependency
+└── tests/testthat/test-utils.R         # covers R/utils.R only, on purpose
 ```
 
 ## Violations and the rule that catches them
@@ -35,6 +36,8 @@ research-pipeline/
 | `analysis/clean_data.R`, `shiny_dashboard/helpers.R` | `clean_and_summarize()`/`format_summary_label()` never referenced under `tests/` | `testing.missingTests` |
 | `analysis/clean_data.R` | `reshape2::melt(df)`, configured as deprecated in this example's `rtrace.yml` | `package.deprecatedApi` |
 | `shiny_dashboard/helpers.R` | `library(shiny)` with no `app.R` or `ui.R`+`server.R` entrypoint anywhere in the project | `ecosystem.shinyStructure` |
+| `analysis/pipeline_orchestration.R` | `library(targets)` with no `_targets.R` at the project root | `ecosystem.targetsStructure` |
+| `analysis/pipeline_orchestration.R` | `library(plumber)` with no `#*` route annotations anywhere in the project | `ecosystem.plumberStructure` |
 
 `R/utils.R` is included as a contrast: fully documented, no anti-patterns,
 and covered by `tests/testthat/test-utils.R` — demonstrating that RTrace

@@ -64,15 +64,24 @@ are sequencing decisions, not architectural gaps.
   roadmap) needs a rule-scope capability model that doesn't exist yet, and
   is deferred rather than built unsafely.
 
-## 0.2.0 — Remaining ecosystem presets + richer HTML
+## 0.1.x — Further ecosystem presets + doctor command (shipped)
+
+- `ecosystem.targetsStructure` rule: flags `targets` usage with no
+  `_targets.R` at the project root. `drake` is deliberately not covered —
+  no fixed conventional entrypoint filename to check for.
+- `ecosystem.plumberStructure` rule: flags `plumber` usage with no `#*`
+  route annotation comments anywhere in the project.
+- `rtrace doctor` command: environment/setup diagnostics — R/RTrace
+  versions, suggested-package availability (`xml2`), `rtrace.yml`
+  presence/validity, RStudio Project detection (`.Rproj` file), and AST
+  cache state. Pulled forward from 0.3.0 since it had no dependency on the
+  plugin/IDE work also originally grouped there.
+
+## 0.2.0 — Richer HTML + rule-scope capability
 
 - HTML report enhancement: dependency-graph/architecture-overview
   visualization (the 0.1.x HTML reporter is a flat diagnostic list; this
   adds a rendered layer graph)
-- Further ecosystem-aware structure rules: `targets`/`drake` pipeline
-  structure, `plumber` API structure, RStudio Project detection (the Shiny
-  case shipped in 0.1.x — see above; same self-gated pattern applies to
-  these)
 - Per-rule `scope: "file" | "project"` capability on the `Rule` interface,
   enabling a correct per-file diagnostic cache for file-scoped rules (see
   [ADR 0003](adr/0003-incremental-ast-caching.md))
@@ -86,8 +95,6 @@ are sequencing decisions, not architectural gaps.
   diagnostics via the Problems panel (Language Server Protocol-style
   diagnostics publishing)
 - RStudio Addin: "Run RTrace Scan" command + Markers pane integration
-- `rtrace doctor` command: environment/setup diagnostics (R version, missing
-  suggested packages, config schema drift)
 - `rtrace benchmark` command: timing breakdown per rule/per file for large
   repositories
 

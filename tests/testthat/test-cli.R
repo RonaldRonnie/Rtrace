@@ -122,3 +122,46 @@ test_that("rtrace_cli config prints the resolved configuration", {
   expect_equal(status, 0L)
   expect_match(out, "rtrace_config")
 })
+
+test_that("rtrace_cli doctor reports a clean bill of health for a valid project", {
+  root <- local_project(c("rtrace.yml" = "version: 1\nrules: []\n"))
+  out <- testthat::capture_output(status <- rtrace_cli(c("doctor", root)))
+  expect_equal(status, 0L)
+  expect_match(out, "RTrace doctor")
+  expect_match(out, "R version:")
+  expect_match(out, "No problems found")
+})
+
+test_that("rtrace_cli doctor flags an invalid rtrace.yml and returns exit status 1", {
+  root <- local_project(c("rtrace.yml" = "version: 1\nrules:\n  - type: not.a.real.rule\n"))
+  out <- testthat::capture_output(status <- rtrace_cli(c("doctor", root)))
+  expect_equal(status, 1L)
+  expect_match(out, "\\[FAIL\\]")
+  expect_match(out, "problem\\(s\\) found")
+})
+
+test_that("rtrace_cli doctor warns (not fails) when no rtrace.yml is present", {
+  root <- local_project(list())
+  out <- testthat::capture_output(status <- rtrace_cli(c("doctor", root)))
+  expect_equal(status, 0L)
+  expect_match(out, "\\[WARN\\] No rtrace.yml found")
+})
+
+test_that("rtrace_cli doctor reports an .Rproj file when present", {
+  root <- local_project(c("myproj.Rproj" = "Version: 1.0"))
+  out <- testthat::capture_output(status <- rtrace_cli(c("doctor", root)))
+  expect_match(out, "RStudio Project detected \\(myproj.Rproj\\)")
+})
+
+test_that("rtrace_cli doctor reports cache state after a cached scan", {
+  root <- local_project(c("f.R" = "x <- 1"))
+  testthat::capture_output(rtrace_cli(c("scan", root, "--cache")))
+  out <- testthat::capture_output(status <- rtrace_cli(c("doctor", root)))
+  expect_match(out, "ast-cache.rds present \\(1 cached file")
+})
+
+test_that("rtrace_cli doctor fails cleanly for a nonexistent project directory", {
+  out <- testthat::capture_output(status <- rtrace_cli(c("doctor", "/no/such/project/dir")))
+  expect_equal(status, 1L)
+  expect_match(out, "does not exist")
+})

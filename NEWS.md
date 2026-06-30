@@ -27,6 +27,14 @@
   content-hash-keyed AST parse cache (`.rtrace_cache/ast-cache.rds`).
   Diagnostics are always recomputed for the full project, so results are
   identical with or without caching — see ADR 0003.
+* `ecosystem.targetsStructure` rule: flags `targets` usage with no
+  `_targets.R` at the project root.
+* `ecosystem.plumberStructure` rule: flags `plumber` usage with no `#*`
+  route annotations anywhere in the project.
+* `rtrace doctor` CLI command: environment and project setup diagnostics
+  (R/RTrace versions, suggested-package availability, `rtrace.yml`
+  validity, RStudio Project detection, AST cache state) without running a
+  scan.
 
 ## Documentation
 

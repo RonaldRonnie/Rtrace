@@ -76,3 +76,11 @@ rules:
   - type: ecosystem.shinyStructure
     enabled: true
     severity: warning
+
+  - type: ecosystem.targetsStructure
+    enabled: true
+    severity: warning
+
+  - type: ecosystem.plumberStructure
+    enabled: true
+    severity: warning

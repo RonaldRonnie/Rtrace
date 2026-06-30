@@ -168,6 +168,96 @@ cmd_config <- function(options, positional) {
   0L
 }
 
+#' `rtrace doctor` command
+#'
+#' Environment and project setup diagnostics: R version, suggested-package
+#' availability, `rtrace.yml` presence/validity, RStudio Project detection,
+#' and AST cache state. Does not run a scan.
+#'
+#' @param options,positional See [parse_cli_args()].
+#' @return Integer exit status (`1` if any `[FAIL]` line was printed).
+#' @keywords internal
+#' @noRd
+cmd_doctor <- function(options, positional) {
+  root <- if (length(positional) > 0) positional[1] else "."
+  problems <- 0L
+
+  report <- function(level, msg) {
+    cat(sprintf("  [%s] %s\n", level, msg))
+  }
+
+  cat("RTrace doctor\n\n")
+  cat("Environment:\n")
+  cat(sprintf("  R version:      %s\n", R.version.string))
+  rtrace_version <- tryCatch(as.character(utils::packageVersion("RTrace")), error = function(e) NA_character_)
+  cat(sprintf("  RTrace version: %s\n", if (is.na(rtrace_version)) "(running from source, not installed)" else rtrace_version))
+
+  if (getRversion() >= "4.1.0") {
+    report("OK", sprintf("R %s meets the minimum supported version (>= 4.1.0).", getRversion()))
+  } else {
+    report("FAIL", sprintf("R %s is older than the minimum supported version (>= 4.1.0).", getRversion()))
+    problems <- problems + 1L
+  }
+
+  if (requireNamespace("xml2", quietly = TRUE)) {
+    report("OK", "Suggested package 'xml2' is installed (enables --format xml).")
+  } else {
+    report("WARN", "Suggested package 'xml2' is not installed; --format xml will error until it is.")
+  }
+
+  cat("\n")
+  cat(sprintf("Project: %s\n", root))
+
+  if (!dir.exists(root)) {
+    report("FAIL", "Project directory does not exist.")
+    cat("\n1 problem(s) found.\n")
+    return(1L)
+  }
+
+  config_path <- file.path(root, "rtrace.yml")
+  if (file.exists(config_path)) {
+    result <- tryCatch({
+      validate_config(read_config(config_path))
+      NULL
+    }, error = function(e) e)
+
+    if (is.null(result)) {
+      report("OK", sprintf("%s is present and valid.", config_path))
+    } else {
+      report("FAIL", sprintf("%s is present but invalid: %s", config_path, conditionMessage(result)))
+      problems <- problems + 1L
+    }
+  } else {
+    report("WARN", sprintf(
+      "No rtrace.yml found at %s; `rtrace scan` will use built-in defaults. Run `rtrace init` to create one.",
+      root
+    ))
+  }
+
+  rproj_files <- list.files(root, pattern = "\\.Rproj$")
+  if (length(rproj_files) > 0) {
+    report("OK", sprintf("RStudio Project detected (%s).", paste(rproj_files, collapse = ", ")))
+  } else {
+    report("INFO", "No .Rproj file found (not an RStudio Project; fine for non-RStudio workflows).")
+  }
+
+  if (file.exists(cache_path(root))) {
+    cache <- read_ast_cache(root)
+    report("OK", sprintf(".rtrace_cache/ast-cache.rds present (%d cached file(s)).", length(cache)))
+  } else {
+    report("INFO", "No AST cache present (use `rtrace scan --cache` to enable incremental scanning).")
+  }
+
+  cat("\n")
+  if (problems == 0) {
+    cat("No problems found.\n")
+  } else {
+    cat(sprintf("%d problem(s) found.\n", problems))
+  }
+
+  if (problems > 0) 1L else 0L
+}
+
 #' `rtrace version` command
 #' @param options,positional See [parse_cli_args()].
 #' @return Integer exit status.
@@ -213,6 +303,7 @@ rtrace_help_text <- function() {
     "  list-rules              List all registered rules",
     "  describe-rule <id>      Show details for a single rule",
     "  config [path]           Print the resolved configuration",
+    "  doctor [path]           Check environment and project setup (no scan)",
     "  version                  Print the RTrace and R version",
     "  help                     Show this message",
     "",
@@ -243,6 +334,7 @@ rtrace_cli <- function(argv = commandArgs(trailingOnly = TRUE)) {
     `list-rules` = cmd_list_rules,
     `describe-rule` = cmd_describe_rule,
     config = cmd_config,
+    doctor = cmd_doctor,
     version = cmd_version,
     NULL
   )

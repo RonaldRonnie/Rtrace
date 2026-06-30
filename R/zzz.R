@@ -14,5 +14,7 @@
   register_rule(rule_testing_missing_tests())
   register_rule(rule_package_deprecated_api())
   register_rule(rule_ecosystem_shiny_structure())
+  register_rule(rule_ecosystem_targets_structure())
+  register_rule(rule_ecosystem_plumber_structure())
   invisible()
 }

@@ -170,8 +170,8 @@ every module be unit-tested in isolation with synthetic inputs.
   via `Rscript -e 'cat(system.file("rtrace", package = "rtrace"))'` or run
   directly with `Rscript -e 'rtrace::rtrace_cli()'`) dispatches to one
   function per subcommand (`cmd_scan`, `cmd_init`, `cmd_validate`,
-  `cmd_list_rules`, `cmd_describe_rule`, `cmd_config`, `cmd_version`,
-  `cmd_help`). No CLI-parsing dependency is introduced; argument parsing is
+  `cmd_list_rules`, `cmd_describe_rule`, `cmd_config`, `cmd_doctor`,
+  `cmd_version`, `cmd_help`). No CLI-parsing dependency is introduced; argument parsing is
   intentionally minimal (subcommand + `--flag value` pairs) and lives in
   `R/cli_args.R`, independently unit-testable from the commands themselves.
 - The CLI is a thin layer: every command composes the same library calls

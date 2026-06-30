@@ -222,3 +222,52 @@ test_that("ecosystem.shinyStructure does not flag a ui.R/server.R pair split acr
   expect_length(diags, 1)
   expect_match(diags$diagnostics[[1]]$message, "no app.R or ui.R\\+server.R entrypoint")
 })
+
+test_that("ecosystem.targetsStructure is silent when the project does not use targets", {
+  diags <- scan_with_rule(c("R/foo.R" = "x <- 1"), "ecosystem.targetsStructure")
+  expect_length(diags, 0)
+})
+
+test_that("ecosystem.targetsStructure is silent when _targets.R exists at the root", {
+  diags <- scan_with_rule(c(
+    "_targets.R" = "library(targets)\ntar_plan()",
+    "R/funcs.R" = "f <- function() 1"
+  ), "ecosystem.targetsStructure")
+  expect_length(diags, 0)
+})
+
+test_that("ecosystem.targetsStructure flags targets usage with no _targets.R at the root", {
+  diags <- scan_with_rule(c(
+    "R/funcs.R" = "library(targets)\nf <- function() 1"
+  ), "ecosystem.targetsStructure")
+  expect_length(diags, 1)
+  expect_match(diags$diagnostics[[1]]$message, "_targets.R")
+})
+
+test_that("ecosystem.targetsStructure does not accept _targets.R in a subdirectory", {
+  diags <- scan_with_rule(c(
+    "R/funcs.R" = "library(targets)",
+    "pipeline/_targets.R" = "tar_plan()"
+  ), "ecosystem.targetsStructure")
+  expect_length(diags, 1)
+})
+
+test_that("ecosystem.plumberStructure is silent when the project does not use plumber", {
+  diags <- scan_with_rule(c("R/foo.R" = "x <- 1"), "ecosystem.plumberStructure")
+  expect_length(diags, 0)
+})
+
+test_that("ecosystem.plumberStructure is silent when a #* route annotation exists", {
+  diags <- scan_with_rule(c(
+    "plumber.R" = "library(plumber)\n#* @get /health\nfunction() { \"ok\" }"
+  ), "ecosystem.plumberStructure")
+  expect_length(diags, 0)
+})
+
+test_that("ecosystem.plumberStructure flags plumber usage with no route annotations", {
+  diags <- scan_with_rule(c(
+    "R/api.R" = "library(plumber)\nf <- function() 1"
+  ), "ecosystem.plumberStructure")
+  expect_length(diags, 1)
+  expect_match(diags$diagnostics[[1]]$message, "#\\* route annotations")
+})

@@ -153,6 +153,28 @@ describe-rule <id>` prints a single rule's defaults at any time.
   2. The project imports `shiny` but no directory has a valid `app.R` or
      `ui.R`+`server.R` entrypoint at all.
 
+## ecosystem.targetsStructure
+
+* **Default severity:** `warning`
+* **Enabled by default** — self-gated like `ecosystem.shinyStructure`,
+  on the project importing `targets`.
+* **Params:** none
+* **Detects:** the project imports `targets` but has no `_targets.R`
+  pipeline definition at the project root (the file `targets::tar_make()`
+  and friends require). `drake` (the package `targets` superseded) is
+  deliberately not covered — it has no single fixed conventional
+  entrypoint filename, so a presence check would be a guess.
+
+## ecosystem.plumberStructure
+
+* **Default severity:** `warning`
+* **Enabled by default** — self-gated like `ecosystem.shinyStructure`,
+  on the project importing `plumber`.
+* **Params:** none
+* **Detects:** the project imports `plumber` but has no `#*` route
+  annotation comments (e.g. `#* @get /path`) anywhere — plumber APIs are
+  defined entirely through these annotations.
+
 ## Writing your own rule
 
 See the [Rule Authoring Guide](rule-authoring-guide.md).

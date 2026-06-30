@@ -83,7 +83,7 @@ output, lives in
 | Documentation | `documentation.missing` |
 | Testing | `testing.missingTests` |
 | Package policy | `package.deprecatedApi` |
-| Ecosystem-specific | `ecosystem.shinyStructure` |
+| Ecosystem-specific | `ecosystem.shinyStructure`, `ecosystem.targetsStructure`, `ecosystem.plumberStructure` |
 
 Run `rtrace list-rules` for the full, current list with default severities,
 or see [dev/rules-reference.md](dev/rules-reference.md) for parameters and

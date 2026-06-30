@@ -34,7 +34,7 @@ Scans `path` and reports diagnostics.
 | `--format console\|json\|markdown\|sarif\|html\|csv\|xml` | `console` | Output format. `sarif` produces a SARIF 2.1.0 log suitable for GitHub code scanning upload; `html` is a standalone, dependency-free report; `xml` requires the `xml2` package. |
 | `--output <file>` | stdout | Write the report to a file (ignored for `console`, which always writes to stdout). |
 | `--fail-on error\|warning` | `error` | Severity threshold for a nonzero exit status. |
-| `--cache` | off | Reuse a `.rtrace_cache/ast-cache.rds` AST cache from a prior run for files whose content hash hasn't changed, instead of re-parsing them. Only the parse step is cached — diagnostics are always recomputed for the full project, so results are identical with or without `--cache`. Off by default so a scan never writes files to your project directory unless you ask. See [ADR 0002](adr/0002-core-architecture.md). |
+| `--cache` | off | Reuse a `.rtrace_cache/ast-cache.rds` AST cache from a prior run for files whose content hash hasn't changed, instead of re-parsing them. Only the parse step is cached — diagnostics are always recomputed for the full project, so results are identical with or without `--cache`. Off by default so a scan never writes files to your project directory unless you ask. See [ADR 0003](adr/0003-incremental-ast-caching.md). |
 
 Exit status: `0` if no diagnostic at or above `--fail-on` was found, `1`
 otherwise.
@@ -73,6 +73,23 @@ Prints the resolved configuration (after merging `rtrace.yml` with
 defaults) and, for each declared rule, whether it's enabled and its
 effective severity.
 
+### `doctor [path]`
+
+Environment and project setup diagnostics — does not run a scan. Reports,
+each prefixed `[OK]`/`[WARN]`/`[FAIL]`/`[INFO]`:
+
+* the running R and RTrace versions, and whether R meets the minimum
+  supported version;
+* whether the `xml2` package (needed for `--format xml`) is installed;
+* whether `<path>/rtrace.yml` exists and is valid;
+* whether `<path>` is an RStudio Project (has an `.Rproj` file);
+* whether a `.rtrace_cache/` AST cache is present, and how many files it
+  covers.
+
+Exits `1` if any `[FAIL]` was reported (an invalid `rtrace.yml`, or a
+project directory that doesn't exist); `[WARN]`/`[INFO]` lines don't
+affect the exit status.
+
 ### `version`
 
 Prints the installed RTrace version and the running R version.
@@ -90,4 +107,5 @@ Prints command usage. Also shown for an unrecognized command (which exits
 | `init` | file written | file already exists (without `--force`) |
 | `validate` | configuration valid | configuration invalid |
 | `describe-rule` | rule found and printed | unknown rule id |
+| `doctor` | no `[FAIL]` reported | at least one `[FAIL]` reported |
 | everything else | command ran | unknown command |
