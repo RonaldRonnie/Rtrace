@@ -31,7 +31,7 @@ Scans `path` and reports diagnostics.
 | Flag | Default | Description |
 |---|---|---|
 | `--config <file>` | `<path>/rtrace.yml` if present, else built-in defaults | Use a specific config file. |
-| `--format console\|json\|markdown\|sarif\|html\|csv\|xml` | `console` | Output format. `sarif` produces a SARIF 2.1.0 log suitable for GitHub code scanning upload; `html` is a standalone, dependency-free report; `xml` requires the `xml2` package. |
+| `--format console\|json\|markdown\|sarif\|html\|csv\|xml` | `console` | Output format. `sarif` produces a SARIF 2.1.0 log suitable for GitHub code scanning upload; `html` is a standalone, dependency-free report including an inline SVG architecture-overview diagram of the configured `layers:` dependency graph (cyclic edges drawn in red); `xml` requires the `xml2` package. |
 | `--output <file>` | stdout | Write the report to a file (ignored for `console`, which always writes to stdout). |
 | `--fail-on error\|warning` | `error` | Severity threshold for a nonzero exit status. |
 | `--cache` | off | Reuse a `.rtrace_cache/ast-cache.rds` AST cache from a prior run for files whose content hash hasn't changed, instead of re-parsing them. Only the parse step is cached — diagnostics are always recomputed for the full project, so results are identical with or without `--cache`. Off by default so a scan never writes files to your project directory unless you ask. See [ADR 0003](adr/0003-incremental-ast-caching.md). |

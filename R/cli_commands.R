@@ -26,7 +26,8 @@ resolve_config <- function(root, options) {
 cmd_scan <- function(options, positional) {
   root <- if (length(positional) > 0) positional[1] else "."
   config <- resolve_config(root, options)
-  diagnostics <- run_scan(root, config, use_cache = isTRUE(options$cache))
+  context <- build_context(root, config, use_cache = isTRUE(options$cache))
+  diagnostics <- run_rules(context)
 
   format <- options$format %||% "console"
   rendered <- switch(format,
@@ -34,7 +35,11 @@ cmd_scan <- function(options, positional) {
     json = reporter_json(diagnostics),
     markdown = reporter_markdown(diagnostics),
     sarif = reporter_sarif(diagnostics),
-    html = reporter_html(diagnostics),
+    html = reporter_html(
+      diagnostics,
+      layers = setdiff(unique(context$files$layer), "(unassigned)"),
+      layer_graph = context$dependency_graph$layer_graph
+    ),
     csv = reporter_csv(diagnostics),
     xml = reporter_xml(diagnostics),
     rlang::abort(sprintf(

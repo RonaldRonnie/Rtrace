@@ -35,6 +35,12 @@
   (R/RTrace versions, suggested-package availability, `rtrace.yml`
   validity, RStudio Project detection, AST cache state) without running a
   scan.
+* The HTML reporter now renders an "Architecture Overview" section: an
+  inline SVG diagram of the configured `layers:` dependency graph, with
+  cyclic edges drawn in red. Pure SVG, no external JS/CSS — still a single
+  standalone file. `reporter_html()` gained optional `layers`/
+  `layer_graph` parameters (default empty, so its primary `diagnostics`-only
+  contract is unchanged).
 
 ## Documentation
 

@@ -119,6 +119,63 @@ test_that("reporter_html handles an empty diagnostic set", {
   expect_match(html, "0 error\\(s\\)")
 })
 
+test_that("reporter_html omits the architecture section when layers is NULL or empty", {
+  html_null <- reporter_html(new_diagnostic_set(list()))
+  expect_no_match(html_null, "Architecture Overview")
+
+  html_empty <- reporter_html(new_diagnostic_set(list()), layers = character(0))
+  expect_no_match(html_empty, "Architecture Overview")
+})
+
+test_that("reporter_html embeds an architecture section when layers is provided", {
+  html <- reporter_html(
+    new_diagnostic_set(list()),
+    layers = c("analysis", "shiny"),
+    layer_graph = list(analysis = "shiny")
+  )
+  expect_match(html, "Architecture Overview")
+  expect_match(html, "<svg", fixed = TRUE)
+  expect_match(html, ">analysis<", fixed = TRUE)
+  expect_match(html, ">shiny<", fixed = TRUE)
+})
+
+test_that("render_layer_graph_svg returns NULL for an empty layer set", {
+  expect_null(render_layer_graph_svg(character(0)))
+})
+
+test_that("render_layer_graph_svg places a single node at the center", {
+  svg <- render_layer_graph_svg("only-layer", list(), width = 400, height = 300)
+  expect_match(svg, '<circle cx="200.0" cy="150.0"', fixed = TRUE)
+})
+
+test_that("render_layer_graph_svg draws one node per layer and HTML-escapes labels", {
+  svg <- render_layer_graph_svg(c("a", "b", "<bad>"), list())
+  expect_equal(lengths(regmatches(svg, gregexpr("<circle", svg))), 3)
+  expect_match(svg, "&lt;bad&gt;", fixed = TRUE)
+  expect_no_match(svg, "<bad>", fixed = TRUE)
+})
+
+test_that("render_layer_graph_svg draws an edge for each layer_graph entry", {
+  svg <- render_layer_graph_svg(c("a", "b"), list(a = "b"))
+  expect_equal(lengths(regmatches(svg, gregexpr("<line", svg))), 1)
+})
+
+test_that("render_layer_graph_svg ignores edges to/from layers not in the node set", {
+  svg <- render_layer_graph_svg(c("a", "b"), list(a = c("b", "ghost")))
+  expect_equal(lengths(regmatches(svg, gregexpr("<line", svg))), 1)
+})
+
+test_that("render_layer_graph_svg colors a cyclic edge red and a normal edge gray", {
+  # Both marker defs are always emitted in <defs>, so check the <line>
+  # element's own stroke color, not just substring presence anywhere.
+  svg_cycle <- render_layer_graph_svg(c("a", "b"), list(a = "b", b = "a"))
+  expect_match(svg_cycle, '<line[^>]*stroke="#cf222e"')
+
+  svg_normal <- render_layer_graph_svg(c("a", "b"), list(a = "b"))
+  expect_no_match(svg_normal, '<line[^>]*stroke="#cf222e"')
+  expect_match(svg_normal, '<line[^>]*stroke="#8c959f"')
+})
+
 test_that("reporter_csv produces a header row plus one row per diagnostic", {
   csv <- reporter_csv(sample_diagnostics())
   lines <- strsplit(csv, "\n")[[1]]

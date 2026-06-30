@@ -77,11 +77,24 @@ are sequencing decisions, not architectural gaps.
   cache state. Pulled forward from 0.3.0 since it had no dependency on the
   plugin/IDE work also originally grouped there.
 
-## 0.2.0 — Richer HTML + rule-scope capability
+## 0.1.x — HTML architecture visualization (shipped)
 
-- HTML report enhancement: dependency-graph/architecture-overview
-  visualization (the 0.1.x HTML reporter is a flat diagnostic list; this
-  adds a rendered layer graph)
+- `render_layer_graph_svg()`: a simple, dependency-free circular-layout SVG
+  renderer for the layer dependency graph (no JS, no external graph-layout
+  library — legible for the small-to-moderate layer counts typical of a
+  `layers:` config, not a general graph-layout algorithm). Cyclic edges
+  (per [find_cycles()]) are drawn in red.
+- `reporter_html()` gained optional `layers`/`layer_graph` parameters
+  that, when supplied, render an "Architecture Overview" section above the
+  diagnostics list. Both default to empty, so the reporter's primary
+  contract (`diagnostics` alone, like every other reporter — ADR 0002) is
+  unchanged for existing callers.
+- `cmd_scan` now builds the context explicitly (`build_context()` +
+  `run_rules()`, rather than the `run_scan()` convenience wrapper) so it
+  has the layer graph on hand to pass through for `--format html`.
+
+## 0.2.0 — Rule-scope capability
+
 - Per-rule `scope: "file" | "project"` capability on the `Rule` interface,
   enabling a correct per-file diagnostic cache for file-scoped rules (see
   [ADR 0003](adr/0003-incremental-ast-caching.md))

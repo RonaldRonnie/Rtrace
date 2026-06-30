@@ -4,12 +4,27 @@
 \alias{reporter_html}
 \title{Render a diagnostic set as a standalone HTML report}
 \usage{
-reporter_html(diagnostics, title = "RTrace Scan Report")
+reporter_html(
+  diagnostics,
+  title = "RTrace Scan Report",
+  layers = NULL,
+  layer_graph = list()
+)
 }
 \arguments{
 \item{diagnostics}{An \code{rtrace_diagnostic_set}.}
 
 \item{title}{Character scalar report heading.}
+
+\item{layers}{Optional character vector of configured layer names (e.g.
+\code{setdiff(unique(context$files$layer), "(unassigned)")}). When
+non-empty, an "Architecture Overview" section is rendered above the
+diagnostics list via \code{\link[=render_layer_graph_svg]{render_layer_graph_svg()}}. Omit (the default)
+for a diagnostics-only report — \code{reporter_html()}'s primary contract
+is still just \code{diagnostics}, like every other reporter (see ADR 0002).}
+
+\item{layer_graph}{Optional named list, \code{context$dependency_graph$layer_graph}.
+Ignored if \code{layers} is empty.}
 }
 \value{
 Character scalar containing a full HTML document.
