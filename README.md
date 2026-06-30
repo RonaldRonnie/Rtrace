@@ -102,10 +102,11 @@ examples of each.
 ## Status
 
 RTrace is pre-1.0 and under active development. The core engine, rule
-engine, CLI, and all seven reporters (console/JSON/Markdown/SARIF/HTML/
-CSV/XML) are implemented and tested; see [dev/roadmap.md](dev/roadmap.md)
-for what is shipped versus planned (ecosystem-aware layer presets, IDE
-integrations, incremental scanning).
+engine, CLI, all seven reporters (console/JSON/Markdown/SARIF/HTML/CSV/
+XML), an opt-in AST parse cache for incremental scanning, and 14 built-in
+rules are implemented and tested; see [dev/roadmap.md](dev/roadmap.md) for
+what is shipped versus planned (further ecosystem-aware presets, IDE
+integrations, a richer HTML report).
 
 ## Contributing
 

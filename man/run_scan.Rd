@@ -4,12 +4,15 @@
 \alias{run_scan}
 \title{Run a full RTrace scan over a project directory}
 \usage{
-run_scan(root = ".", config = default_config())
+run_scan(root = ".", config = default_config(), use_cache = FALSE)
 }
 \arguments{
 \item{root}{Character scalar path to the project root.}
 
 \item{config}{An \code{rtrace_config} object. Defaults to \code{\link[=default_config]{default_config()}}.}
+
+\item{use_cache}{Logical, passed through to \code{\link[=build_context]{build_context()}}. Default
+\code{FALSE}.}
 }
 \value{
 An \code{rtrace_diagnostic_set}.

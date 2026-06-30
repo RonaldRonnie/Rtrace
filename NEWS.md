@@ -23,10 +23,14 @@
 * `ecosystem.shinyStructure` rule: flags conflicting (`app.R` plus
   `ui.R`/`server.R`) or missing Shiny entrypoints. Self-gated on the
   project actually importing `shiny`, so it's enabled by default.
+* Incremental scanning: an opt-in (`--cache` / `use_cache = TRUE`)
+  content-hash-keyed AST parse cache (`.rtrace_cache/ast-cache.rds`).
+  Diagnostics are always recomputed for the full project, so results are
+  identical with or without caching — see ADR 0003.
 
 ## Documentation
 
-* Architecture Decision Records for ecosystem positioning and core
-  architecture.
+* Architecture Decision Records for ecosystem positioning, core
+  architecture, and incremental AST caching.
 * Quick start, configuration reference, rule authoring guide, and CLI
   reference.

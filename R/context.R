@@ -25,23 +25,24 @@ new_context <- function(root, config, files, asts, dependency_graph) {
 
 #' Build a full rule-evaluation context for a project directory
 #'
-#' Orchestrates [scan_files()], [parse_file()] (one call per discovered
-#' file), and [build_dependency_graph()] into a single [new_context()].
-#' This is the function the CLI's `scan` command and [run_scan()] call;
-#' most users will not call it directly.
+#' Orchestrates [scan_files()], parsing (one call per discovered file, via
+#' [parse_files_cached()]), and [build_dependency_graph()] into a single
+#' [new_context()]. This is the function the CLI's `scan` command and
+#' [run_scan()] call; most users will not call it directly.
 #'
 #' @param root Character scalar path to the project root.
 #' @param config An `rtrace_config` object.
+#' @param use_cache Logical; reuse a `.rtrace_cache/` AST cache from a
+#'   previous run where file content hashes match, instead of re-parsing
+#'   every file. Default `FALSE` — see [ast-cache] for why this is opt-in.
+#'   Only the parse step is cached; diagnostics are always recomputed.
 #' @return An `rtrace_context` object.
 #' @export
-build_context <- function(root, config) {
+build_context <- function(root, config, use_cache = FALSE) {
   root <- normalizePath(root, mustWork = TRUE)
   files <- scan_files(root, config)
 
-  asts <- stats::setNames(
-    lapply(files$path, parse_file),
-    files$path
-  )
+  asts <- parse_files_cached(files$path, root, use_cache = use_cache)
 
   dependency_graph <- build_dependency_graph(files, asts, root = root)
 

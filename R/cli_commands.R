@@ -26,7 +26,7 @@ resolve_config <- function(root, options) {
 cmd_scan <- function(options, positional) {
   root <- if (length(positional) > 0) positional[1] else "."
   config <- resolve_config(root, options)
-  diagnostics <- run_scan(root, config)
+  diagnostics <- run_scan(root, config, use_cache = isTRUE(options$cache))
 
   format <- options$format %||% "console"
   rendered <- switch(format,
@@ -207,6 +207,7 @@ rtrace_help_text <- function() {
     "                            --output <file>    write the report to a file",
     "                            --config <file>     use a specific config file",
     "                            --fail-on error|warning   exit-status threshold (default: error)",
+    "                            --cache             reuse a .rtrace_cache/ AST cache from a prior run",
     "  init [path]            Create a starter rtrace.yml (--force to overwrite)",
     "  validate [path]        Validate a project's configuration without scanning",
     "  list-rules              List all registered rules",

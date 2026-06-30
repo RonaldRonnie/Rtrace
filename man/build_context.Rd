@@ -4,19 +4,24 @@
 \alias{build_context}
 \title{Build a full rule-evaluation context for a project directory}
 \usage{
-build_context(root, config)
+build_context(root, config, use_cache = FALSE)
 }
 \arguments{
 \item{root}{Character scalar path to the project root.}
 
 \item{config}{An \code{rtrace_config} object.}
+
+\item{use_cache}{Logical; reuse a \verb{.rtrace_cache/} AST cache from a
+previous run where file content hashes match, instead of re-parsing
+every file. Default \code{FALSE} — see \link{ast-cache} for why this is opt-in.
+Only the parse step is cached; diagnostics are always recomputed.}
 }
 \value{
 An \code{rtrace_context} object.
 }
 \description{
-Orchestrates \code{\link[=scan_files]{scan_files()}}, \code{\link[=parse_file]{parse_file()}} (one call per discovered
-file), and \code{\link[=build_dependency_graph]{build_dependency_graph()}} into a single \code{\link[=new_context]{new_context()}}.
-This is the function the CLI's \code{scan} command and \code{\link[=run_scan]{run_scan()}} call;
-most users will not call it directly.
+Orchestrates \code{\link[=scan_files]{scan_files()}}, parsing (one call per discovered file, via
+\code{\link[=parse_files_cached]{parse_files_cached()}}), and \code{\link[=build_dependency_graph]{build_dependency_graph()}} into a single
+\code{\link[=new_context]{new_context()}}. This is the function the CLI's \code{scan} command and
+\code{\link[=run_scan]{run_scan()}} call; most users will not call it directly.
 }

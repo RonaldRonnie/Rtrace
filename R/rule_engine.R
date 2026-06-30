@@ -63,9 +63,11 @@ run_rules <- function(context) {
 #'
 #' @param root Character scalar path to the project root.
 #' @param config An `rtrace_config` object. Defaults to [default_config()].
+#' @param use_cache Logical, passed through to [build_context()]. Default
+#'   `FALSE`.
 #' @return An `rtrace_diagnostic_set`.
 #' @export
-run_scan <- function(root = ".", config = default_config()) {
-  context <- build_context(root, config)
+run_scan <- function(root = ".", config = default_config(), use_cache = FALSE) {
+  context <- build_context(root, config, use_cache = use_cache)
   run_rules(context)
 }

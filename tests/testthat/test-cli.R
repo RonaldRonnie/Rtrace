@@ -60,6 +60,27 @@ test_that("rtrace_cli scan command runs end-to-end and reflects exit status", {
   expect_match(out, "antipattern.setwd")
 })
 
+test_that("rtrace_cli scan --cache writes a .rtrace_cache directory and scan still works", {
+  root <- local_project(c("f.R" = "setwd('/tmp')"))
+  writeLines(c(
+    "version: 1",
+    "rules:",
+    "  - type: antipattern.setwd",
+    "    severity: error"
+  ), file.path(root, "rtrace.yml"))
+
+  out <- testthat::capture_output(status <- rtrace_cli(c("scan", root, "--cache")))
+  expect_equal(status, 1L)
+  expect_match(out, "antipattern.setwd")
+  expect_true(file.exists(cache_path(root)))
+})
+
+test_that("rtrace_cli scan without --cache never creates a .rtrace_cache directory", {
+  root <- local_project(c("f.R" = "x <- 1"))
+  testthat::capture_output(rtrace_cli(c("scan", root)))
+  expect_false(file.exists(cache_path(root)))
+})
+
 test_that("rtrace_cli scan --format json writes parseable JSON to stdout", {
   root <- local_project(c("f.R" = "x <- 1"))
   out <- testthat::capture_output(status <- rtrace_cli(c("scan", root, "--format", "json")))

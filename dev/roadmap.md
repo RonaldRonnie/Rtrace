@@ -1,11 +1,11 @@
 # RTrace Roadmap
 
 This roadmap distinguishes what ships in the 0.1.0 core-engine release from
-what is designed-for but deliberately deferred, per [ADR 0001](adr/0001-rtrace-scope-and-positioning.md)
-and [ADR 0002](adr/0002-core-architecture.md). Deferred items have a stable
-extension point already in place (a reporter function signature, a rule
-interface, a plugin registration hook) — they are sequencing decisions, not
-architectural gaps.
+what is designed-for but deliberately deferred, per [ADR 0001](adr/0001-rtrace-scope-and-positioning.md),
+[ADR 0002](adr/0002-core-architecture.md), and [ADR 0003](adr/0003-incremental-ast-caching.md).
+Deferred items have a stable extension point already in place (a reporter
+function signature, a rule interface, a plugin registration hook) — they
+are sequencing decisions, not architectural gaps.
 
 ## 0.1.0 — Core engine (this release)
 
@@ -53,6 +53,17 @@ architectural gaps.
   `shiny` usage (zero cost/noise for non-Shiny projects), so it's enabled
   by default unlike the other opt-in rules.
 
+## 0.1.x — Incremental scanning (shipped, narrower scope than originally planned)
+
+- AST parse cache (`R/cache.R`, `--cache` on `rtrace scan`,
+  `use_cache = TRUE` on `build_context()`/`run_scan()`): content-hash-keyed
+  `.rtrace_cache/ast-cache.rds`, opt-in, off by default. Caches the parse
+  step only — diagnostics are always recomputed for the full project on
+  every scan, by design. See [ADR 0003](adr/0003-incremental-ast-caching.md)
+  for why per-file *diagnostic* caching (the original wording in this
+  roadmap) needs a rule-scope capability model that doesn't exist yet, and
+  is deferred rather than built unsafely.
+
 ## 0.2.0 — Remaining ecosystem presets + richer HTML
 
 - HTML report enhancement: dependency-graph/architecture-overview
@@ -62,8 +73,9 @@ architectural gaps.
   structure, `plumber` API structure, RStudio Project detection (the Shiny
   case shipped in 0.1.x — see above; same self-gated pattern applies to
   these)
-- Incremental scanning: cache parsed ASTs and per-file diagnostics keyed on
-  file hash, invalidate only changed files
+- Per-rule `scope: "file" | "project"` capability on the `Rule` interface,
+  enabling a correct per-file diagnostic cache for file-scoped rules (see
+  [ADR 0003](adr/0003-incremental-ast-caching.md))
 
 ## 0.3.0 — Plugin discovery + IDE integration
 

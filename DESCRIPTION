@@ -24,6 +24,7 @@ Imports:
     jsonlite (>= 1.8.0),
     R6 (>= 2.5.0),
     rlang (>= 1.1.0),
+    tools,
     utils,
     yaml (>= 2.3.0)
 Suggests:
