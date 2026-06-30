@@ -43,6 +43,8 @@ default_config <- function() {
       list(type = "antipattern.hardcodedPath", enabled = TRUE, severity = "warning",
            params = list()),
       list(type = "documentation.missing", enabled = FALSE, severity = "info",
+           params = list()),
+      list(type = "ecosystem.shinyStructure", enabled = TRUE, severity = "warning",
            params = list())
     )
   )

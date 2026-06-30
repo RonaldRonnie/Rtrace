@@ -175,3 +175,50 @@ test_that("package.deprecatedApi does not cross-match a bare name against an unr
   )
   expect_length(diags, 0)
 })
+
+test_that("ecosystem.shinyStructure is silent when the project does not use shiny", {
+  diags <- scan_with_rule(c("R/foo.R" = "x <- 1"), "ecosystem.shinyStructure")
+  expect_length(diags, 0)
+})
+
+test_that("ecosystem.shinyStructure is silent for a valid single app.R entrypoint", {
+  diags <- scan_with_rule(c(
+    "app.R" = "library(shiny)\nshinyApp(ui = fluidPage(), server = function(input, output) {})"
+  ), "ecosystem.shinyStructure")
+  expect_length(diags, 0)
+})
+
+test_that("ecosystem.shinyStructure is silent for a valid ui.R + server.R pair", {
+  diags <- scan_with_rule(c(
+    "ui.R" = "library(shiny)\nfluidPage()",
+    "server.R" = "function(input, output) {}"
+  ), "ecosystem.shinyStructure")
+  expect_length(diags, 0)
+})
+
+test_that("ecosystem.shinyStructure flags a directory with both app.R and ui.R/server.R", {
+  diags <- scan_with_rule(c(
+    "app.R" = "library(shiny)",
+    "ui.R" = "fluidPage()",
+    "server.R" = "function(input, output) {}"
+  ), "ecosystem.shinyStructure")
+  expect_length(diags, 1)
+  expect_match(diags$diagnostics[[1]]$message, "both an app.R and a ui.R/server.R pair")
+})
+
+test_that("ecosystem.shinyStructure flags shiny usage with no recognized entrypoint", {
+  diags <- scan_with_rule(c(
+    "R/helpers.R" = "library(shiny)\nf <- function() 1"
+  ), "ecosystem.shinyStructure")
+  expect_length(diags, 1)
+  expect_match(diags$diagnostics[[1]]$message, "no app.R or ui.R\\+server.R entrypoint")
+})
+
+test_that("ecosystem.shinyStructure does not flag a ui.R/server.R pair split across directories", {
+  diags <- scan_with_rule(c(
+    "ui.R" = "library(shiny)\nfluidPage()",
+    "sub/server.R" = "function(input, output) {}"
+  ), "ecosystem.shinyStructure")
+  expect_length(diags, 1)
+  expect_match(diags$diagnostics[[1]]$message, "no app.R or ui.R\\+server.R entrypoint")
+})

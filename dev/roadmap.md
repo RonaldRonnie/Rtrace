@@ -45,14 +45,23 @@ architectural gaps.
 - CSV reporter (`--format csv`) and XML reporter (`--format xml`, requires
   the `xml2` package — the only reporter with a non-base dependency)
 
-## 0.2.0 — Ecosystem awareness + richer HTML
+## 0.1.x — Ecosystem awareness (shipped)
+
+- `ecosystem.shinyStructure` rule: flags a directory with conflicting
+  `app.R` + `ui.R`/`server.R` entrypoints, or a project that imports
+  `shiny` with no recognized entrypoint at all. Self-gated on actual
+  `shiny` usage (zero cost/noise for non-Shiny projects), so it's enabled
+  by default unlike the other opt-in rules.
+
+## 0.2.0 — Remaining ecosystem presets + richer HTML
 
 - HTML report enhancement: dependency-graph/architecture-overview
   visualization (the 0.1.x HTML reporter is a flat diagnostic list; this
   adds a rendered layer graph)
-- Ecosystem-aware layer presets: Shiny app structure (`ui.R`/`server.R`/
-  `app.R` conventions), `targets`/`drake` pipeline structure, `plumber` API
-  structure, RStudio Project detection
+- Further ecosystem-aware structure rules: `targets`/`drake` pipeline
+  structure, `plumber` API structure, RStudio Project detection (the Shiny
+  case shipped in 0.1.x — see above; same self-gated pattern applies to
+  these)
 - Incremental scanning: cache parsed ASTs and per-file diagnostics keyed on
   file hash, invalidate only changed files
 

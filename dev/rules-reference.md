@@ -139,6 +139,20 @@ describe-rule <id>` prints a single rule's defaults at any time.
       "plyr::ddply": "dplyr::group_by() + dplyr::summarise()"
   ```
 
+## ecosystem.shinyStructure
+
+* **Default severity:** `warning`
+* **Enabled by default** — unlike the other opt-in/heuristic rules, this
+  one is self-gated: it only evaluates anything if the project imports
+  `shiny` somewhere, so it adds zero noise to non-Shiny projects.
+* **Params:** none
+* **Detects:** two Shiny-specific structural problems:
+  1. A directory containing *both* an `app.R` and a `ui.R`/`server.R`
+     pair — Shiny only recognizes one entrypoint convention per app
+     directory.
+  2. The project imports `shiny` but no directory has a valid `app.R` or
+     `ui.R`+`server.R` entrypoint at all.
+
 ## Writing your own rule
 
 See the [Rule Authoring Guide](rule-authoring-guide.md).

@@ -72,3 +72,7 @@ rules:
     severity: warning
     functions:
       "reshape2::melt": "tidyr::pivot_longer()"
+
+  - type: ecosystem.shinyStructure
+    enabled: true
+    severity: warning

@@ -34,6 +34,7 @@ research-pipeline/
 | `analysis/clean_data.R`, `shiny_dashboard/helpers.R` | functions with no roxygen2 block | `documentation.missing` |
 | `analysis/clean_data.R`, `shiny_dashboard/helpers.R` | `clean_and_summarize()`/`format_summary_label()` never referenced under `tests/` | `testing.missingTests` |
 | `analysis/clean_data.R` | `reshape2::melt(df)`, configured as deprecated in this example's `rtrace.yml` | `package.deprecatedApi` |
+| `shiny_dashboard/helpers.R` | `library(shiny)` with no `app.R` or `ui.R`+`server.R` entrypoint anywhere in the project | `ecosystem.shinyStructure` |
 
 `R/utils.R` is included as a contrast: fully documented, no anti-patterns,
 and covered by `tests/testthat/test-utils.R` — demonstrating that RTrace

@@ -76,3 +76,9 @@ rules:
     enabled: false
     severity: warning
     functions: {}
+
+  # Self-gated: only evaluates anything if the shiny package is actually
+  # imported somewhere in the project, so it's safe to leave on by default.
+  - type: ecosystem.shinyStructure
+    enabled: true
+    severity: warning

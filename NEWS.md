@@ -20,6 +20,9 @@
   inline CSS and escaped diagnostic content.
 * CSV reporter (`--format csv`) and XML reporter (`--format xml`, requires
   the `xml2` package).
+* `ecosystem.shinyStructure` rule: flags conflicting (`app.R` plus
+  `ui.R`/`server.R`) or missing Shiny entrypoints. Self-gated on the
+  project actually importing `shiny`, so it's enabled by default.
 
 ## Documentation
 

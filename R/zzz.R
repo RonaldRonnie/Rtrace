@@ -13,5 +13,6 @@
   register_rule(rule_documentation_missing())
   register_rule(rule_testing_missing_tests())
   register_rule(rule_package_deprecated_api())
+  register_rule(rule_ecosystem_shiny_structure())
   invisible()
 }
