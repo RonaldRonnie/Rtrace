@@ -1,0 +1,125 @@
+url: https://rtrace-dev.github.io/rtrace/
+
+template:
+  bootstrap: 5
+  bslib:
+    primary: "#0969da"
+
+home:
+  title: RTrace
+  description: >
+    Architecture governance and static analysis for R projects and packages.
+
+navbar:
+  structure:
+    left: [reference, news, guides]
+    right: [github]
+  components:
+    guides:
+      text: Guides
+      menu:
+        - text: Quick Start
+          href: https://github.com/rtrace-dev/rtrace/blob/main/dev/quick-start.md
+        - text: Configuration Reference
+          href: https://github.com/rtrace-dev/rtrace/blob/main/dev/configuration-reference.md
+        - text: Rules Reference
+          href: https://github.com/rtrace-dev/rtrace/blob/main/dev/rules-reference.md
+        - text: Rule Authoring Guide
+          href: https://github.com/rtrace-dev/rtrace/blob/main/dev/rule-authoring-guide.md
+        - text: CLI Reference
+          href: https://github.com/rtrace-dev/rtrace/blob/main/dev/cli-reference.md
+        - text: -------
+        - text: Architecture Decision Records
+          href: https://github.com/rtrace-dev/rtrace/tree/main/dev/adr
+        - text: Roadmap
+          href: https://github.com/rtrace-dev/rtrace/blob/main/dev/roadmap.md
+
+reference:
+- title: Scanning
+  desc: Top-level entry points for running a scan
+  contents:
+  - run_scan
+  - build_context
+  - run_rules
+  - new_context
+  - relative_path
+
+- title: Configuration
+  desc: Loading, validating, and constructing rtrace.yml configuration
+  contents:
+  - default_config
+  - new_config
+  - read_config
+  - parse_config
+  - validate_config
+  - known_rule_types
+
+- title: Rule engine
+  desc: The Rule class and the rule registry
+  contents:
+  - Rule
+  - register_rule
+  - get_rule
+  - list_rules
+
+- title: Diagnostics
+  desc: The Diagnostic and DiagnosticSet model
+  contents:
+  - new_diagnostic
+  - new_diagnostic_set
+  - filter_diagnostics
+  - exit_status
+  - summary.rtrace_diagnostic_set
+  - as.data.frame.rtrace_diagnostic_set
+  - c.rtrace_diagnostic_set
+
+- title: Reporters
+  desc: Rendering a diagnostic set into a report format
+  contents:
+  - reporter_console
+  - reporter_json
+  - reporter_markdown
+  - reporter_sarif
+  - reporter_html
+  - reporter_csv
+  - reporter_xml
+  - render_layer_graph_svg
+  - html_escape
+
+- title: Project scanning internals
+  desc: File walking, parsing, and dependency graph construction
+  contents:
+  - scan_files
+  - default_excludes
+  - glob_to_regex
+  - path_matches_any_glob
+  - parse_file
+  - ast_line_count
+  - find_calls
+  - find_qualified_calls
+  - find_superassignments
+  - top_level_functions
+  - cyclomatic_complexity
+  - build_dependency_graph
+  - extract_package_imports
+  - extract_source_targets
+  - find_cycles
+
+- title: Incremental scanning (cache)
+  desc: Opt-in AST parse cache (see ADR 0003)
+  contents:
+  - ast-cache
+  - cache_path
+  - read_ast_cache
+  - write_ast_cache
+  - file_hash
+  - parse_files_cached
+
+- title: CLI
+  contents:
+  - rtrace_cli
+  - parse_cli_args
+
+- title: RStudio
+  contents:
+  - rtrace_addin_scan
