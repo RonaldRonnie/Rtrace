@@ -193,6 +193,18 @@ test_that("reporter_csv quotes fields containing commas", {
   expect_equal(parsed$message, "a, b, c")
 })
 
+test_that("reporter_csv neutralizes CSV formula injection in file and message fields", {
+  set <- new_diagnostic_set(list(
+    new_diagnostic("r", "error", "=evil.R", message = "=SUM(1+1)", suggestion = "+BAD()"),
+    new_diagnostic("r", "warning", "normal.R", message = "ordinary message")
+  ))
+  csv <- reporter_csv(set)
+  expect_match(csv, "'=evil.R", fixed = TRUE)
+  expect_match(csv, "'=SUM", fixed = TRUE)
+  expect_match(csv, "'+BAD", fixed = TRUE)
+  expect_no_match(csv, ',"=evil.R"', fixed = TRUE)
+})
+
 test_that("reporter_xml produces well-formed, schema-conformant XML", {
   skip_if_not_installed("xml2")
   xml <- reporter_xml(sample_diagnostics())
