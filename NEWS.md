@@ -16,6 +16,10 @@
   `tests/` (disabled by default; complements, not replaces, `covr`).
 * `package.deprecatedApi` rule: flags calls to project-configured
   deprecated functions, bare or namespace-qualified.
+* HTML reporter (`--format html`): standalone, dependency-free report with
+  inline CSS and escaped diagnostic content.
+* CSV reporter (`--format csv`) and XML reporter (`--format xml`, requires
+  the `xml2` package).
 
 ## Documentation
 

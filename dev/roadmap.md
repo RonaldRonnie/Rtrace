@@ -38,11 +38,18 @@ architectural gaps.
   replacement
 - `find_qualified_calls()` parser primitive for detecting `pkg::fn` /
   `pkg:::fn` call sites generally
+- HTML reporter (`--format html`): standalone, dependency-free report
+  (inline CSS, no JS) grouping diagnostics by file with severity coloring;
+  escapes all scanned-content fields before embedding (see
+  [SECURITY.md](../SECURITY.md))
+- CSV reporter (`--format csv`) and XML reporter (`--format xml`, requires
+  the `xml2` package — the only reporter with a non-base dependency)
 
-## 0.2.0 — Reporting breadth + ecosystem awareness
+## 0.2.0 — Ecosystem awareness + richer HTML
 
-- HTML reporter (standalone report with architecture-overview visualization)
-- CSV and XML reporters
+- HTML report enhancement: dependency-graph/architecture-overview
+  visualization (the 0.1.x HTML reporter is a flat diagnostic list; this
+  adds a rendered layer graph)
 - Ecosystem-aware layer presets: Shiny app structure (`ui.R`/`server.R`/
   `app.R` conventions), `targets`/`drake` pipeline structure, `plumber` API
   structure, RStudio Project detection

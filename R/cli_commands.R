@@ -34,7 +34,12 @@ cmd_scan <- function(options, positional) {
     json = reporter_json(diagnostics),
     markdown = reporter_markdown(diagnostics),
     sarif = reporter_sarif(diagnostics),
-    rlang::abort(sprintf("Unknown --format '%s'. Supported: console, json, markdown, sarif.", format))
+    html = reporter_html(diagnostics),
+    csv = reporter_csv(diagnostics),
+    xml = reporter_xml(diagnostics),
+    rlang::abort(sprintf(
+      "Unknown --format '%s'. Supported: console, json, markdown, sarif, html, csv, xml.", format
+    ))
   )
 
   if (format == "console") {
@@ -198,7 +203,7 @@ rtrace_help_text <- function() {
     "",
     "COMMANDS:",
     "  scan [path]            Scan a project and report diagnostics",
-    "                            --format console|json|markdown|sarif (default: console)",
+    "                            --format console|json|markdown|sarif|html|csv|xml (default: console)",
     "                            --output <file>    write the report to a file",
     "                            --config <file>     use a specific config file",
     "                            --fail-on error|warning   exit-status threshold (default: error)",
