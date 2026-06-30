@@ -12,30 +12,52 @@ devtools::load_all()
 devtools::test()
 ```
 
+If `devtools` itself won't install in your environment (it pulls in `fs`
+>= 2.1.0, which needs `libuv`, which needs `cmake` — a real, fairly common
+sandboxed-environment limitation, not specific to this package), the
+pieces it wraps work fine installed individually and used directly — this
+is how the package was developed in such an environment:
+
+```r
+install.packages(c("roxygen2", "testthat", "rcmdcheck", "pkgdown",
+                    "yaml", "cli", "R6", "rlang", "jsonlite"))
+pkgload::load_all()                                  # instead of devtools::load_all()
+roxygen2::roxygenise()                                # instead of devtools::document()
+testthat::test_dir("tests/testthat")                  # instead of devtools::test()
+rcmdcheck::rcmdcheck(args = "--no-manual")             # instead of devtools::check()
+```
+
 ## Before opening a pull request
 
-1. `devtools::document()` — regenerate `man/` and `NAMESPACE` from roxygen
-   comments. Do not hand-edit `NAMESPACE` or files under `man/`.
-2. `devtools::test()` — all tests must pass.
-3. `devtools::check()` — should be free of errors and warnings; new NOTEs
-   should be explained in the PR description.
-4. Add a `NEWS.md` bullet under `# RTrace (development version)` describing
-   the user-visible change.
+1. `devtools::document()` (or `roxygen2::roxygenise()`) — regenerate `man/`
+   and `NAMESPACE` from roxygen comments. Do not hand-edit `NAMESPACE` or
+   files under `man/`.
+2. `devtools::test()` (or `testthat::test_dir("tests/testthat")`) — all
+   tests must pass.
+3. `devtools::check()` (or `rcmdcheck::rcmdcheck()`) — should be free of
+   errors and warnings; new NOTEs should be explained in the PR
+   description.
+4. Add a `NEWS.md` bullet under the current development-version heading
+   describing the user-visible change.
 5. If you added or changed a rule, update its entry in
-   `dev/rules-reference.md` and add a fixture in
-   `tests/testthat/fixtures/`.
+   `dev/rules-reference.md` and add positive/negative fixtures to
+   `tests/testthat/test-rules-builtin.R`.
 
 ## Adding a new built-in rule
 
 See [dev/rule-authoring-guide.md](dev/rule-authoring-guide.md) for the
-full walkthrough. In short:
+full walkthrough, including why rules are registered centrally rather
+than via a top-level `register_rule()` call in each rule's own file. In
+short:
 
-1. Create `R/rule_<name>.R` defining an `R6::R6Class` rule and calling
-   `register_rule()` at the bottom of the file.
-2. Add `tests/testthat/test-rule-<name>.R` with at least one fixture that
-   should trigger the rule and one that should not.
-3. Document the rule's `type` key, parameters, and default severity in
-   `dev/rules-reference.md`.
+1. Create `R/rules_<category>.R` with a `rule_<name>()` constructor
+   function that returns a `Rule` instance — it does **not** call
+   `register_rule()` itself.
+2. Add `register_rule(rule_<name>())` to `.onLoad()` in `R/zzz.R`.
+3. Add it to [`inst/templates/rtrace.yml`](inst/templates/rtrace.yml) and
+   document it in `dev/rules-reference.md`.
+4. Add test cases to `tests/testthat/test-rules-builtin.R`: at least one
+   fixture that should trigger the rule and one that should not.
 
 ## Adding a new reporter
 
