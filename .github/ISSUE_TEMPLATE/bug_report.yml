@@ -1,0 +1,30 @@
+name: Bug report
+description: Something in RTrace is broken or behaving unexpectedly
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: A clear description of the bug and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reprex
+    attributes:
+      label: Minimal reproduction
+      description: >
+        A minimal `rtrace.yml` plus R file(s) that trigger the bug, or a link
+        to a minimal repository. Please use a reprex
+        (https://reprex.tidyverse.org) where possible.
+      render: r
+    validations:
+      required: true
+  - type: textarea
+    id: session-info
+    attributes:
+      label: Session info
+      description: Output of `rtrace::rtrace_sitrep()` or `sessionInfo()`.
+      render: text
+    validations:
+      required: true

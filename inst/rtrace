@@ -1,0 +1,5 @@
+#!/usr/bin/env Rscript
+args <- commandArgs(trailingOnly = TRUE)
+suppressPackageStartupMessages(requireNamespace("RTrace", quietly = TRUE))
+status <- RTrace::rtrace_cli(args)
+quit(status = status, save = "no")

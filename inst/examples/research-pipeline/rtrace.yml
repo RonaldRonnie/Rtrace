@@ -1,0 +1,64 @@
+version: 1
+
+project: research-pipeline-example
+
+# This example intentionally uses a low complexity.fileLength max and
+# enables documentation.missing so that every built-in rule produces at
+# least one diagnostic against this small example project. Real projects
+# should use the defaults in inst/templates/rtrace.yml as a starting point.
+
+layers:
+  analysis: ["analysis/**"]
+  shiny_dashboard: ["shiny_dashboard/**"]
+  R: ["R/**"]
+
+rules:
+  - type: structure.requiredDirs
+    enabled: true
+    severity: warning
+    dirs: ["R", "tests"]
+
+  - type: dependency.forbidden
+    enabled: true
+    severity: error
+    from: analysis
+    to: shiny_dashboard
+
+  - type: dependency.circular
+    enabled: true
+    severity: error
+
+  - type: complexity.cyclomatic
+    enabled: true
+    severity: warning
+    max: 5
+
+  - type: complexity.functionLength
+    enabled: true
+    severity: warning
+    max: 15
+
+  - type: complexity.fileLength
+    enabled: true
+    severity: warning
+    max: 20
+
+  - type: antipattern.globalAssign
+    enabled: true
+    severity: warning
+
+  - type: antipattern.assign
+    enabled: true
+    severity: info
+
+  - type: antipattern.setwd
+    enabled: true
+    severity: error
+
+  - type: antipattern.hardcodedPath
+    enabled: true
+    severity: warning
+
+  - type: documentation.missing
+    enabled: true
+    severity: info

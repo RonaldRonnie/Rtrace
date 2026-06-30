@@ -1,0 +1,65 @@
+version: 1
+
+project: my-project
+
+# Layers map a name to one or more glob patterns (relative to the project
+# root). Used by dependency.forbidden and dependency.circular.
+layers:
+  R: ["R/**"]
+  analysis: ["analysis/**"]
+  shiny: ["shiny/**", "app/**"]
+
+# Glob patterns to exclude from scanning, in addition to RTrace's built-in
+# defaults (.git, renv, packrat, man, etc).
+exclude: []
+
+rules:
+  - type: structure.requiredDirs
+    enabled: true
+    severity: warning
+    dirs: ["R", "tests"]
+
+  - type: dependency.forbidden
+    enabled: true
+    severity: error
+    from: analysis
+    to: shiny
+
+  - type: dependency.circular
+    enabled: true
+    severity: error
+
+  - type: complexity.cyclomatic
+    enabled: true
+    severity: warning
+    max: 15
+
+  - type: complexity.functionLength
+    enabled: true
+    severity: warning
+    max: 60
+
+  - type: complexity.fileLength
+    enabled: true
+    severity: warning
+    max: 500
+
+  - type: antipattern.globalAssign
+    enabled: true
+    severity: warning
+
+  - type: antipattern.assign
+    enabled: true
+    severity: info
+
+  - type: antipattern.setwd
+    enabled: true
+    severity: error
+
+  - type: antipattern.hardcodedPath
+    enabled: true
+    severity: warning
+
+  - type: documentation.missing
+    enabled: false
+    severity: info

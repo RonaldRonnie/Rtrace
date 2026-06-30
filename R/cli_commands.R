@@ -1,0 +1,257 @@
+#' Resolve the configuration for a CLI invocation
+#'
+#' Looks for `--config <path>`, else `rtrace.yml` in `root`, else falls
+#' back to [default_config()].
+#' @param root Character scalar project root.
+#' @param options CLI options list (see [parse_cli_args()]).
+#' @return An `rtrace_config` object.
+#' @keywords internal
+#' @noRd
+resolve_config <- function(root, options) {
+  if (!is.null(options$config)) {
+    return(read_config(options$config))
+  }
+  default_path <- file.path(root, "rtrace.yml")
+  if (file.exists(default_path)) {
+    return(read_config(default_path))
+  }
+  default_config()
+}
+
+#' `rtrace scan` command
+#' @param options,positional See [parse_cli_args()].
+#' @return Integer exit status.
+#' @keywords internal
+#' @noRd
+cmd_scan <- function(options, positional) {
+  root <- if (length(positional) > 0) positional[1] else "."
+  config <- resolve_config(root, options)
+  diagnostics <- run_scan(root, config)
+
+  format <- options$format %||% "console"
+  rendered <- switch(format,
+    console = NULL,
+    json = reporter_json(diagnostics),
+    markdown = reporter_markdown(diagnostics),
+    rlang::abort(sprintf("Unknown --format '%s'. Supported: console, json, markdown.", format))
+  )
+
+  if (format == "console") {
+    reporter_console(diagnostics)
+  } else if (!is.null(options$output)) {
+    writeLines(rendered, options$output)
+    cat(sprintf("Report written to %s\n", options$output))
+  } else {
+    cat(rendered, "\n", sep = "")
+  }
+
+  fail_on <- options$`fail-on` %||% "error"
+  exit_status(diagnostics, fail_on = fail_on)
+}
+
+#' `rtrace init` command
+#' @param options,positional See [parse_cli_args()].
+#' @return Integer exit status.
+#' @keywords internal
+#' @noRd
+cmd_init <- function(options, positional) {
+  root <- if (length(positional) > 0) positional[1] else "."
+  target <- file.path(root, "rtrace.yml")
+
+  if (file.exists(target) && !isTRUE(options$force)) {
+    cat(sprintf("%s already exists. Use --force to overwrite.\n", target))
+    return(1L)
+  }
+
+  template <- system.file("templates", "rtrace.yml", package = "RTrace")
+  if (!nzchar(template)) {
+    rlang::abort("Could not locate the bundled rtrace.yml template.")
+  }
+  file.copy(template, target, overwrite = TRUE)
+  cat(sprintf("Created %s\n", target))
+  0L
+}
+
+#' `rtrace validate` command
+#' @param options,positional See [parse_cli_args()].
+#' @return Integer exit status.
+#' @keywords internal
+#' @noRd
+cmd_validate <- function(options, positional) {
+  root <- if (length(positional) > 0) positional[1] else "."
+  result <- tryCatch({
+    config <- resolve_config(root, options)
+    validate_config(config)
+    config
+  }, error = function(e) e)
+
+  if (inherits(result, "error")) {
+    cat("Configuration is INVALID:\n")
+    cat(paste(" -", conditionMessage(result)), sep = "\n")
+    return(1L)
+  }
+
+  cat("Configuration is valid.\n")
+  print(result)
+  0L
+}
+
+#' `rtrace list-rules` command
+#' @param options,positional See [parse_cli_args()].
+#' @return Integer exit status.
+#' @keywords internal
+#' @noRd
+cmd_list_rules <- function(options, positional) {
+  rules <- list_rules()
+  if (length(rules) == 0) {
+    cat("No rules registered.\n")
+    return(0L)
+  }
+  ids <- names(rules)[order(names(rules))]
+  for (id in ids) {
+    r <- rules[[id]]
+    cat(sprintf("%-32s [%-7s] %s\n", r$id, r$default_severity, r$description))
+  }
+  0L
+}
+
+#' `rtrace describe-rule <id>` command
+#' @param options,positional See [parse_cli_args()].
+#' @return Integer exit status.
+#' @keywords internal
+#' @noRd
+cmd_describe_rule <- function(options, positional) {
+  if (length(positional) == 0) {
+    cat("Usage: rtrace describe-rule <rule-id>\n")
+    return(1L)
+  }
+  rule <- get_rule(positional[1])
+  if (is.null(rule)) {
+    cat(sprintf("Unknown rule: %s\n", positional[1]))
+    return(1L)
+  }
+  cat(sprintf("id:               %s\n", rule$id))
+  cat(sprintf("description:      %s\n", rule$description))
+  cat(sprintf("default_severity: %s\n", rule$default_severity))
+  cat("default_params:\n")
+  if (length(rule$default_params) == 0) {
+    cat("  (none)\n")
+  } else {
+    for (n in names(rule$default_params)) {
+      cat(sprintf("  %s: %s\n", n, paste(rule$default_params[[n]], collapse = ", ")))
+    }
+  }
+  0L
+}
+
+#' `rtrace config` command
+#' @param options,positional See [parse_cli_args()].
+#' @return Integer exit status.
+#' @keywords internal
+#' @noRd
+cmd_config <- function(options, positional) {
+  root <- if (length(positional) > 0) positional[1] else "."
+  config <- resolve_config(root, options)
+  print(config)
+  for (spec in config$rules) {
+    cat(sprintf(
+      "  - %-32s enabled=%-5s severity=%s\n",
+      spec$type, spec$enabled, if (is.na(spec$severity)) "(default)" else spec$severity
+    ))
+  }
+  0L
+}
+
+#' `rtrace version` command
+#' @param options,positional See [parse_cli_args()].
+#' @return Integer exit status.
+#' @keywords internal
+#' @noRd
+cmd_version <- function(options, positional) {
+  version <- tryCatch(as.character(utils::packageVersion("RTrace")), error = function(e) "0.0.0.dev (not installed)")
+  cat(sprintf("RTrace %s\n", version))
+  cat(sprintf("R %s\n", R.version.string))
+  0L
+}
+
+#' `rtrace help` command
+#' @param options,positional See [parse_cli_args()].
+#' @return Integer exit status.
+#' @keywords internal
+#' @noRd
+cmd_help <- function(options, positional) {
+  cat(rtrace_help_text())
+  0L
+}
+
+#' RTrace CLI usage text
+#' @return Character scalar.
+#' @keywords internal
+#' @noRd
+rtrace_help_text <- function() {
+  paste(
+    "RTrace - Architecture governance and static analysis for R projects",
+    "",
+    "USAGE:",
+    "  rtrace <command> [path] [--flag value ...]",
+    "",
+    "COMMANDS:",
+    "  scan [path]            Scan a project and report diagnostics",
+    "                            --format console|json|markdown (default: console)",
+    "                            --output <file>    write the report to a file",
+    "                            --config <file>     use a specific config file",
+    "                            --fail-on error|warning   exit-status threshold (default: error)",
+    "  init [path]            Create a starter rtrace.yml (--force to overwrite)",
+    "  validate [path]        Validate a project's configuration without scanning",
+    "  list-rules              List all registered rules",
+    "  describe-rule <id>      Show details for a single rule",
+    "  config [path]           Print the resolved configuration",
+    "  version                  Print the RTrace and R version",
+    "  help                     Show this message",
+    "",
+    sep = "\n"
+  )
+}
+
+#' RTrace CLI entry point
+#'
+#' Dispatches a parsed command line to the matching `cmd_*` function. Used
+#' by the `inst/rtrace` executable; callable directly for testing.
+#'
+#' @param argv Character vector of command-line arguments (as from
+#'   `commandArgs(trailingOnly = TRUE)`).
+#' @return Integer exit status (0 = success, 1 = failure).
+#' @export
+rtrace_cli <- function(argv = commandArgs(trailingOnly = TRUE)) {
+  parsed <- parse_cli_args(argv)
+
+  if (is.na(parsed$command) || parsed$command %in% c("help", "-h", "--help")) {
+    return(cmd_help(parsed$options, parsed$positional))
+  }
+
+  handler <- switch(parsed$command,
+    scan = cmd_scan,
+    init = cmd_init,
+    validate = cmd_validate,
+    `list-rules` = cmd_list_rules,
+    `describe-rule` = cmd_describe_rule,
+    config = cmd_config,
+    version = cmd_version,
+    NULL
+  )
+
+  if (is.null(handler)) {
+    cat(sprintf("Unknown command: %s\n\n", parsed$command))
+    cat(rtrace_help_text())
+    return(1L)
+  }
+
+  status <- tryCatch(
+    handler(parsed$options, parsed$positional),
+    error = function(e) {
+      cat(sprintf("Error: %s\n", conditionMessage(e)))
+      1L
+    }
+  )
+  as.integer(status)
+}

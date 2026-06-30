@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/rtrace-dev/rtrace/security/policy
+    about: Please report security issues privately per SECURITY.md, not as a public issue.
+  - name: Questions and discussion
+    url: https://github.com/rtrace-dev/rtrace/discussions
+    about: Usage questions and general discussion.

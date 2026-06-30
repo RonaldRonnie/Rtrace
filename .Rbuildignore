@@ -1,0 +1,15 @@
+^RTrace\.Rproj$
+^\.Rproj\.user$
+^dev$
+^\.github$
+^\.qodo$
+^README\.Rmd$
+^cran-comments\.md$
+^_pkgdown\.yml$
+^pkgdown$
+^\.git$
+^\.gitignore$
+^CONTRIBUTING\.md$
+^CODE_OF_CONDUCT\.md$
+^SECURITY\.md$
+^inst/examples/.*/\.rtrace_cache$

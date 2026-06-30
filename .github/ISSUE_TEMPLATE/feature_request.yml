@@ -1,0 +1,28 @@
+name: Feature request
+description: Suggest a new rule, reporter, CLI command, or capability
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: >
+        What architectural/quality issue can you not currently detect or
+        report with RTrace?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: >
+        If this is a new rule, include the proposed `type` key and
+        parameters as they would appear in `rtrace.yml`.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: false

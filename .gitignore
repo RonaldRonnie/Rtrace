@@ -1,0 +1,14 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.Rcheck/
+*.tar.gz
+.Rbuildignore.bck
+inst/doc
+docs/
+pkgdown/
+.rtrace_cache/
+.DS_Store
+*.log
+.qodo/
