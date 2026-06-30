@@ -90,6 +90,15 @@ Exits `1` if any `[FAIL]` was reported (an invalid `rtrace.yml`, or a
 project directory that doesn't exist); `[WARN]`/`[INFO]` lines don't
 affect the exit status.
 
+### `benchmark [path]`
+
+Times each phase of a scan (file walk, parsing, dependency graph
+construction) and each enabled rule's evaluation against `<path>`, then
+prints a breakdown — rules sorted slowest-first. Doesn't print
+diagnostics; use `scan` for that. Supports `--cache` (same meaning as on
+`scan`). Always exits `0` — a rule that errors during evaluation is still
+timed and reported, not treated as a benchmark failure.
+
 ### `version`
 
 Prints the installed RTrace version and the running R version.

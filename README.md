@@ -89,6 +89,12 @@ Run `rtrace list-rules` for the full, current list with default severities,
 or see [dev/rules-reference.md](dev/rules-reference.md) for parameters and
 examples of each.
 
+## RStudio
+
+RTrace ships an RStudio Addin ("RTrace: Scan Project" in the Addins menu)
+that scans the active project and opens an HTML report — including the
+architecture-overview diagram — in the Viewer pane.
+
 ## Documentation
 
 * [Quick Start](dev/quick-start.md)
@@ -102,12 +108,12 @@ examples of each.
 ## Status
 
 RTrace is pre-1.0 and under active development. The core engine, rule
-engine, CLI (9 commands, including `doctor`), all seven reporters
-(console/JSON/Markdown/SARIF/HTML — with an inline SVG architecture
-diagram — CSV/XML), an opt-in AST parse cache for incremental scanning,
-and 16 built-in rules are implemented and tested; see
-[dev/roadmap.md](dev/roadmap.md) for what is shipped versus planned (a
-per-rule diagnostic cache, IDE integrations, plugin discovery).
+engine, CLI (10 commands, including `doctor` and `benchmark`), an RStudio
+Addin, all seven reporters (console/JSON/Markdown/SARIF/HTML — with an
+inline SVG architecture diagram — CSV/XML), an opt-in AST parse cache for
+incremental scanning, and 16 built-in rules are implemented and tested;
+see [dev/roadmap.md](dev/roadmap.md) for what is shipped versus planned (a
+per-rule diagnostic cache, plugin discovery, a VS Code extension).
 
 ## Contributing
 

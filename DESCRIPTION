@@ -28,6 +28,7 @@ Imports:
     utils,
     yaml (>= 2.3.0)
 Suggests:
+    rstudioapi,
     testthat (>= 3.0.0),
     withr,
     xml2

@@ -263,6 +263,61 @@ cmd_doctor <- function(options, positional) {
   if (problems > 0) 1L else 0L
 }
 
+#' `rtrace benchmark` command
+#'
+#' Times each phase of a scan (file walk, parsing, dependency graph
+#' construction) and each enabled rule's evaluation, then prints a
+#' breakdown sorted slowest-first. Does not print diagnostics — use `scan`
+#' for that; `benchmark` is purely about where time is going.
+#'
+#' @param options,positional See [parse_cli_args()].
+#' @return Integer exit status (always `0`; benchmarking has no pass/fail
+#'   concept of its own — a rule that errors during evaluation is still
+#'   timed and reported, not treated as a benchmark failure).
+#' @keywords internal
+#' @noRd
+cmd_benchmark <- function(options, positional) {
+  root <- if (length(positional) > 0) positional[1] else "."
+  config <- resolve_config(root, options)
+  root <- normalizePath(root, mustWork = TRUE)
+
+  t_walk <- system.time(files <- scan_files(root, config))
+  t_parse <- system.time(asts <- parse_files_cached(files$path, root, use_cache = isTRUE(options$cache)))
+  t_graph <- system.time(dependency_graph <- build_dependency_graph(files, asts, root = root))
+  context <- new_context(root, config, files, asts, dependency_graph)
+
+  rule_timings <- numeric(0)
+  for (spec in config$rules) {
+    if (!isTRUE(spec$enabled)) next
+    rule <- get_rule(spec$type)
+    if (is.null(rule)) next
+    params <- utils::modifyList(rule$default_params, spec$params %||% list())
+    elapsed <- system.time(tryCatch(rule$check(context, params), error = function(e) NULL))[["elapsed"]]
+    rule_timings[rule$id] <- elapsed
+  }
+
+  cat(sprintf("RTrace benchmark: %s\n", root))
+  cat(sprintf("%d file(s) scanned, %d rule(s) evaluated\n\n", nrow(files), length(rule_timings)))
+
+  cat("Phase timings:\n")
+  cat(sprintf("  %-24s %8.3fs\n", "file walk", t_walk[["elapsed"]]))
+  cat(sprintf("  %-24s %8.3fs\n", "parsing", t_parse[["elapsed"]]))
+  cat(sprintf("  %-24s %8.3fs\n", "dependency graph", t_graph[["elapsed"]]))
+  cat("\n")
+
+  if (length(rule_timings) > 0) {
+    cat("Rule timings (slowest first):\n")
+    ordered <- sort(rule_timings, decreasing = TRUE)
+    for (id in names(ordered)) {
+      cat(sprintf("  %-32s %8.3fs\n", id, ordered[[id]]))
+    }
+  } else {
+    cat("No enabled rules to time.\n")
+  }
+
+  0L
+}
+
 #' `rtrace version` command
 #' @param options,positional See [parse_cli_args()].
 #' @return Integer exit status.
@@ -309,6 +364,7 @@ rtrace_help_text <- function() {
     "  describe-rule <id>      Show details for a single rule",
     "  config [path]           Print the resolved configuration",
     "  doctor [path]           Check environment and project setup (no scan)",
+    "  benchmark [path]        Time each scan phase and rule (--cache supported)",
     "  version                  Print the RTrace and R version",
     "  help                     Show this message",
     "",
@@ -340,6 +396,7 @@ rtrace_cli <- function(argv = commandArgs(trailingOnly = TRUE)) {
     `describe-rule` = cmd_describe_rule,
     config = cmd_config,
     doctor = cmd_doctor,
+    benchmark = cmd_benchmark,
     version = cmd_version,
     NULL
   )

@@ -1,0 +1,4 @@
+Name: RTrace: Scan Project
+Description: Scan the active project for architecture violations and open an HTML report in the Viewer
+Binding: rtrace_addin_scan
+Interactive: false

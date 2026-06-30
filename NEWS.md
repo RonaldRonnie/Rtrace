@@ -41,6 +41,12 @@
   standalone file. `reporter_html()` gained optional `layers`/
   `layer_graph` parameters (default empty, so its primary `diagnostics`-only
   contract is unchanged).
+* `rtrace benchmark` CLI command: times each scan phase (file walk,
+  parsing, dependency graph construction) and each enabled rule's
+  evaluation, printing a slowest-first breakdown. Supports `--cache`.
+* RStudio Addin ("RTrace: Scan Project"): scans the active project and
+  opens an HTML report (including the architecture diagram) in the
+  Viewer pane. `rstudioapi` added to `Suggests`.
 
 ## Documentation
 

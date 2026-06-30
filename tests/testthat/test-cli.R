@@ -165,3 +165,50 @@ test_that("rtrace_cli doctor fails cleanly for a nonexistent project directory",
   expect_equal(status, 1L)
   expect_match(out, "does not exist")
 })
+
+test_that("rtrace_cli benchmark reports phase and rule timings and always exits 0", {
+  root <- local_project(c("f.R" = "setwd('/tmp')"))
+  writeLines(c(
+    "version: 1",
+    "rules:",
+    "  - type: antipattern.setwd",
+    "    severity: error"
+  ), file.path(root, "rtrace.yml"))
+
+  out <- testthat::capture_output(status <- rtrace_cli(c("benchmark", root)))
+  expect_equal(status, 0L)
+  expect_match(out, "RTrace benchmark:")
+  expect_match(out, "Phase timings:")
+  expect_match(out, "file walk")
+  expect_match(out, "parsing")
+  expect_match(out, "dependency graph")
+  expect_match(out, "antipattern.setwd")
+})
+
+test_that("rtrace_cli benchmark reports no rules to time when none are enabled", {
+  root <- local_project(c("f.R" = "x <- 1", "rtrace.yml" = "version: 1\nrules: []\n"))
+  out <- testthat::capture_output(status <- rtrace_cli(c("benchmark", root)))
+  expect_equal(status, 0L)
+  expect_match(out, "No enabled rules to time")
+})
+
+test_that("rtrace_cli benchmark still reports a timing for a rule that errors", {
+  rule <- Rule$new("test.boom", "x", function(context, params) stop("kaboom"))
+  register_rule(rule)
+  on.exit(rtrace_env$rule_registry[["test.boom"]] <- NULL, add = TRUE)
+
+  root <- local_project(c(
+    "f.R" = "x <- 1",
+    "rtrace.yml" = "version: 1\nrules:\n  - type: test.boom\n"
+  ))
+  out <- testthat::capture_output(status <- rtrace_cli(c("benchmark", root)))
+  expect_equal(status, 0L)
+  expect_match(out, "test.boom")
+})
+
+test_that("rtrace_cli benchmark supports --cache", {
+  root <- local_project(c("f.R" = "x <- 1"))
+  out <- testthat::capture_output(status <- rtrace_cli(c("benchmark", root, "--cache")))
+  expect_equal(status, 0L)
+  expect_true(file.exists(cache_path(root)))
+})

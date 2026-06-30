@@ -99,17 +99,36 @@ are sequencing decisions, not architectural gaps.
   enabling a correct per-file diagnostic cache for file-scoped rules (see
   [ADR 0003](adr/0003-incremental-ast-caching.md))
 
-## 0.3.0 — Plugin discovery + IDE integration
+## 0.1.x — RStudio Addin + benchmark command (shipped)
+
+- `rtrace_addin_scan()` / "RTrace: Scan Project" (`inst/rstudio/addins.dcf`):
+  scans the active RStudio project (`rstudioapi::getActiveProject()`,
+  falling back to the working directory) and opens an HTML report
+  (architecture diagram included) in the Viewer pane, or the default
+  browser outside RStudio. `rstudioapi` added to `Suggests`, guarded with
+  `requireNamespace()` like `xml2`/`reporter_xml()`. The project-root
+  detection, report-path selection, and scan-and-render logic are factored
+  into separately-testable internal helpers; only the final
+  `viewer()`/`browseURL()` call needs an interactive session and isn't
+  unit-tested.
+- `rtrace benchmark [path]`: times each scan phase (file walk, parsing,
+  dependency graph construction) and each enabled rule's evaluation,
+  printing a slowest-first breakdown. Supports `--cache`. Always exits
+  `0` — a rule erroring during evaluation is timed and reported, not
+  treated as a benchmark failure.
+
+## 0.3.0 — Plugin discovery + VS Code
 
 - Plugin discovery convention: scan installed packages for an
   `rtrace.plugins` field in `DESCRIPTION` and auto-register their rules,
   instead of requiring `.onLoad()` registration
 - VS Code extension: run `rtrace scan --format json` on save, surface
   diagnostics via the Problems panel (Language Server Protocol-style
-  diagnostics publishing)
-- RStudio Addin: "Run RTrace Scan" command + Markers pane integration
-- `rtrace benchmark` command: timing breakdown per rule/per file for large
-  repositories
+  diagnostics publishing). Unlike the RStudio Addin (pure R, lives in this
+  package), a VS Code extension is a separate TypeScript/`package.json`
+  project with its own toolchain (`npm`, the VS Code extension API,
+  `.vsix` packaging) — out of scope for this repo until that toolchain is
+  set up, likely as a sibling repo rather than a subdirectory here.
 
 ## 0.4.0 — Performance at scale
 
