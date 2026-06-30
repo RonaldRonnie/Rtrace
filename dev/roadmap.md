@@ -26,15 +26,23 @@ architectural gaps.
 - Example project with intentional violations + integration tests
 - Quick start, configuration reference, rule authoring guide, CLI reference
 
+## 0.1.x — Reporting & rule expansion (shipped)
+
+- SARIF 2.1.0 reporter (`--format sarif`), for GitHub code-scanning upload
+  and other SARIF-consuming dashboards
+- `testing.missingTests` rule: flags top-level functions never referenced
+  by name under `tests/` (a cheap static heuristic, not a substitute for
+  `covr`'s runtime coverage measurement)
+- `package.deprecatedApi` rule: flags calls to project-configured
+  deprecated functions (bare or namespace-qualified), with a suggested
+  replacement
+- `find_qualified_calls()` parser primitive for detecting `pkg::fn` /
+  `pkg:::fn` call sites generally
+
 ## 0.2.0 — Reporting breadth + ecosystem awareness
 
-- SARIF reporter (GitHub code-scanning integration)
 - HTML reporter (standalone report with architecture-overview visualization)
 - CSV and XML reporters
-- `missingTests` rule (exported function with no referencing `testthat`
-  test)
-- `deprecatedApi` rule (configurable list of deprecated function
-  signatures, e.g. retired `tidyverse`/Bioconductor APIs)
 - Ecosystem-aware layer presets: Shiny app structure (`ui.R`/`server.R`/
   `app.R` conventions), `targets`/`drake` pipeline structure, `plumber` API
   structure, RStudio Project detection

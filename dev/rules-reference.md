@@ -106,6 +106,39 @@ describe-rule <id>` prints a single rule's defaults at any time.
   internal functions) with no `#'` roxygen2 comment block immediately
   above their definition.
 
+## testing.missingTests
+
+* **Default severity:** `info`
+* **Disabled by default**, like `documentation.missing` — it's a
+  heuristic with real false positives (functions only invoked indirectly,
+  S3/S4 methods invoked by generic dispatch, etc.).
+* **Params:** none
+* **Detects:** top-level functions (excluding dot-prefixed internal
+  functions) whose name never appears as a token anywhere under `tests/`.
+  This is a cheap static check, not runtime coverage measurement — for
+  that, use [`covr`](https://covr.r-lib.org/) (see
+  [ADR 0001](adr/0001-rtrace-scope-and-positioning.md)). Silent when the
+  project has no `tests/` files at all, so it doesn't duplicate
+  `structure.requiredDirs`'s "no tests directory" complaint.
+
+## package.deprecatedApi
+
+* **Default severity:** `warning`
+* **Params:** `functions` — a mapping of deprecated identifier (bare
+  `"old_fn"` or namespace-qualified `"pkg::old_fn"`) to suggested
+  replacement text. No-op with an empty/unset `functions` map.
+* **Detects:** calls to any configured deprecated function. Deliberately
+  has no built-in deprecated-API list — "deprecated" is project- and
+  ecosystem-specific.
+* **Example:**
+
+  ```yaml
+  - type: package.deprecatedApi
+    functions:
+      "reshape2::melt": "tidyr::pivot_longer()"
+      "plyr::ddply": "dplyr::group_by() + dplyr::summarise()"
+  ```
+
 ## Writing your own rule
 
 See the [Rule Authoring Guide](rule-authoring-guide.md).

@@ -63,3 +63,16 @@ rules:
   - type: documentation.missing
     enabled: false
     severity: info
+
+  # Heuristic: flags functions never referenced by name under tests/.
+  # Not a substitute for covr's runtime coverage measurement.
+  - type: testing.missingTests
+    enabled: false
+    severity: info
+
+  # No-op until you list functions here. Keys are a bare name ("old_fn")
+  # or namespace-qualified ("pkg::old_fn"); values are suggested replacements.
+  - type: package.deprecatedApi
+    enabled: false
+    severity: warning
+    functions: {}

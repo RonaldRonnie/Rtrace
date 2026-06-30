@@ -5,6 +5,7 @@ raw_data_path <- "/Users/researcher/raw-data/experiment-01.csv"
 clean_and_summarize <- function(df) {
   setwd("/home/researcher/projects/research-pipeline")
   assign("last_run_timestamp", Sys.time())
+  long_df <- reshape2::melt(df)
 
   if (is.null(df)) {
     return(NULL)

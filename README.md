@@ -81,6 +81,8 @@ output, lives in
 | Complexity | `complexity.cyclomatic`, `complexity.functionLength`, `complexity.fileLength` |
 | Reproducibility / anti-patterns | `antipattern.globalAssign` (`<<-`), `antipattern.assign`, `antipattern.setwd`, `antipattern.hardcodedPath` |
 | Documentation | `documentation.missing` |
+| Testing | `testing.missingTests` |
+| Package policy | `package.deprecatedApi` |
 
 Run `rtrace list-rules` for the full, current list with default severities,
 or see [dev/rules-reference.md](dev/rules-reference.md) for parameters and

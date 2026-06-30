@@ -112,3 +112,66 @@ test_that("documentation.missing ignores dot-prefixed internal functions", {
   diags <- scan_with_rule(c("f.R" = ".foo <- function() 1"), "documentation.missing")
   expect_length(diags, 0)
 })
+
+test_that("testing.missingTests flags a function never referenced under tests/", {
+  diags <- scan_with_rule(c(
+    "R/foo.R" = "foo <- function() 1\nbar <- function() 2",
+    "tests/testthat/test-foo.R" = "test_that('foo works', { expect_equal(foo(), 1) })"
+  ), "testing.missingTests")
+  expect_length(diags, 1)
+  expect_match(diags$diagnostics[[1]]$message, "bar")
+})
+
+test_that("testing.missingTests is silent when the project has no tests/ directory", {
+  diags <- scan_with_rule(c("R/foo.R" = "foo <- function() 1"), "testing.missingTests")
+  expect_length(diags, 0)
+})
+
+test_that("testing.missingTests ignores dot-prefixed internal functions", {
+  diags <- scan_with_rule(c(
+    "R/foo.R" = ".internal <- function() 1",
+    "tests/testthat/test-foo.R" = "1 + 1"
+  ), "testing.missingTests")
+  expect_length(diags, 0)
+})
+
+test_that("testing.missingTests does not flag functions defined inside tests/ itself", {
+  diags <- scan_with_rule(c(
+    "tests/testthat/helper.R" = "make_fixture <- function() 1"
+  ), "testing.missingTests")
+  expect_length(diags, 0)
+})
+
+test_that("package.deprecatedApi is a no-op with no configured functions", {
+  diags <- scan_with_rule(c("f.R" = "reshape2::melt(df)"), "package.deprecatedApi")
+  expect_length(diags, 0)
+})
+
+test_that("package.deprecatedApi flags a configured bare function name", {
+  diags <- scan_with_rule(
+    c("f.R" = "x <- old_fn(1)"),
+    "package.deprecatedApi",
+    params = list(functions = list(old_fn = "new_fn"))
+  )
+  expect_length(diags, 1)
+  expect_match(diags$diagnostics[[1]]$suggestion, "new_fn")
+})
+
+test_that("package.deprecatedApi flags a configured namespace-qualified call", {
+  diags <- scan_with_rule(
+    c("f.R" = "x <- reshape2::melt(df)\ny <- dplyr::filter(df)"),
+    "package.deprecatedApi",
+    params = list(functions = list("reshape2::melt" = "tidyr::pivot_longer()"))
+  )
+  expect_length(diags, 1)
+  expect_match(diags$diagnostics[[1]]$message, "reshape2::melt")
+})
+
+test_that("package.deprecatedApi does not cross-match a bare name against an unrelated package", {
+  diags <- scan_with_rule(
+    c("f.R" = "x <- dplyr::melt(df)"),
+    "package.deprecatedApi",
+    params = list(functions = list("reshape2::melt" = "tidyr::pivot_longer()"))
+  )
+  expect_length(diags, 0)
+})

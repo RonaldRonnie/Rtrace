@@ -76,6 +76,39 @@ find_calls <- function(ast, fn_name) {
   )
 }
 
+#' Find all namespace-qualified calls to a given `pkg::fn` (or `pkg:::fn`)
+#'
+#' @param ast An `rtrace_file_ast`.
+#' @param pkg Character scalar package name (e.g. `"reshape2"`).
+#' @param fn_name Character scalar function name (e.g. `"melt"`).
+#' @return A `data.frame` with columns `line1`, `col1` (position of the
+#'   `pkg` token), one row per call site. Zero rows if the file failed to
+#'   parse or contains no such calls.
+#' @export
+find_qualified_calls <- function(ast, pkg, fn_name) {
+  stopifnot(inherits(ast, "rtrace_file_ast"))
+  empty <- data.frame(line1 = integer(0), col1 = integer(0))
+  if (is.null(ast$parse_data)) return(empty)
+
+  pd <- ast$parse_data
+  pd <- pd[as.logical(pd$terminal), , drop = FALSE]
+  pd <- pd[order(pd$line1, pd$col1), , drop = FALSE]
+  n <- nrow(pd)
+  if (n < 3) return(empty)
+
+  hits_idx <- integer(0)
+  for (i in seq_len(n - 2)) {
+    if (pd$token[i] == "SYMBOL_PACKAGE" && pd$text[i] == pkg &&
+        pd$token[i + 1] %in% c("NS_GET", "NS_GET_INT") &&
+        pd$token[i + 2] == "SYMBOL_FUNCTION_CALL" && pd$text[i + 2] == fn_name) {
+      hits_idx <- c(hits_idx, i)
+    }
+  }
+  if (length(hits_idx) == 0) return(empty)
+
+  data.frame(line1 = pd$line1[hits_idx], col1 = pd$col1[hits_idx])
+}
+
 #' Find all `<<-` (superassignment) usages in a parsed file
 #'
 #' @param ast An `rtrace_file_ast`.

@@ -94,3 +94,23 @@ test_that("cyclomatic_complexity counts switch branches", {
   # base(1) + 3 branches = 4
   expect_equal(cyclomatic_complexity(body(f)), 4)
 })
+
+test_that("find_qualified_calls locates pkg::fn call sites", {
+  root <- local_project(c("f.R" = "x <- reshape2::melt(df)\ny <- dplyr::filter(df)"))
+  ast <- parse_file(file.path(root, "f.R"))
+  hits <- find_qualified_calls(ast, "reshape2", "melt")
+  expect_equal(nrow(hits), 1)
+  expect_equal(hits$line1, 1)
+})
+
+test_that("find_qualified_calls does not match a different package with the same function name", {
+  root <- local_project(c("f.R" = "x <- dplyr::melt(df)"))
+  ast <- parse_file(file.path(root, "f.R"))
+  expect_equal(nrow(find_qualified_calls(ast, "reshape2", "melt")), 0)
+})
+
+test_that("find_qualified_calls handles ::: as well as ::", {
+  root <- local_project(c("f.R" = "x <- pkg:::internal_fn()"))
+  ast <- parse_file(file.path(root, "f.R"))
+  expect_equal(nrow(find_qualified_calls(ast, "pkg", "internal_fn")), 1)
+})

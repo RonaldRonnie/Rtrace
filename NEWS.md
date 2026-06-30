@@ -11,6 +11,11 @@
   `antipattern.setwd`, `antipattern.hardcodedPath`, `documentation.missing`.
 * CLI commands: `scan`, `init`, `validate`, `list-rules`, `describe-rule`,
   `config`, `version`, `help`.
+* SARIF 2.1.0 reporter (`--format sarif`) for GitHub code-scanning upload.
+* `testing.missingTests` rule: flags functions never referenced under
+  `tests/` (disabled by default; complements, not replaces, `covr`).
+* `package.deprecatedApi` rule: flags calls to project-configured
+  deprecated functions, bare or namespace-qualified.
 
 ## Documentation
 
