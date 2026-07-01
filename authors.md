@@ -7,7 +7,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/RonaldRonnie/Rtrace/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/RonaldRonnie/Rtrace/blob/v1.0.0/DESCRIPTION)
 
 Contributors R (2026). *RTrace: Trace Platform — Architecture Governance
 and Quality Analysis for R*. R package version 0.2.0.9000,
