@@ -13,3 +13,8 @@
 ^CODE_OF_CONDUCT\.md$
 ^SECURITY\.md$
 ^inst/examples/.*/\.rtrace_cache$
+^CHANGELOG\.md$
+^LICENSE\.md$
+^modules$
+^platform$
+^trace-cloud$

@@ -24,7 +24,7 @@ build_dependency_graph <- function(files, asts, root = NULL) {
   package_imports <- list()
   layer_edges <- list()
 
-  path_to_layer <- stats::setNames(files$layer, files$path)
+  path_to_layer <- as.list(stats::setNames(files$layer, files$path))
   rel_to_abs <- stats::setNames(files$path, files$rel_path)
 
   for (i in seq_len(nrow(files))) {

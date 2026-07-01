@@ -23,8 +23,8 @@ Description: The Trace Platform is a comprehensive software quality and
     optional REST API (requires 'plumber') exposes all functionality over
     HTTP for SaaS and CI/CD integration.
 License: MIT + file LICENSE
-URL: https://github.com/rtrace-dev/rtrace
-BugReports: https://github.com/rtrace-dev/rtrace/issues
+URL: https://github.com/RonaldRonnie/Rtrace, https://ronaldronnie.github.io/Rtrace/
+BugReports: https://github.com/RonaldRonnie/Rtrace/issues
 Depends:
     R (>= 4.1.0)
 Imports:

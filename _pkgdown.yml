@@ -1,4 +1,4 @@
-url: https://rtrace-dev.github.io/rtrace/
+url: https://ronaldronnie.github.io/Rtrace/
 
 template:
   bootstrap: 5
@@ -123,3 +123,89 @@ reference:
 - title: RStudio
   contents:
   - rtrace_addin_scan
+
+- title: Reporters (dashboard)
+  desc: HTML dashboard reporter added in V2
+  contents:
+  - reporter-dashboard
+  - reporter_dashboard
+
+- title: Scoring
+  desc: Score computation and aggregation utilities
+  contents:
+  - scoring
+  - new_trace_score
+  - compute_score
+  - aggregate_scores
+  - score_colour
+  - score_label
+  - scores_as_data_frame
+
+- title: Domain engine — DataTrace
+  desc: Rules and engine for data-file quality and FAIR-compliance checks
+  contents:
+  - datatrace-engine
+  - datatrace-rules
+  - run_datatrace_scan
+  - scan_data_files
+
+- title: Domain engine — DocsTrace
+  desc: Rules and engine for documentation completeness checks
+  contents:
+  - docstrace-engine
+  - docstrace-rules
+  - run_docstrace_scan
+
+- title: Domain engine — PackageQA
+  desc: Rules and engine for R package metadata and convention checks
+  contents:
+  - packageqa-engine
+  - packageqa-rules
+  - run_packageqa_scan
+
+- title: Domain engine — Reproducibility
+  desc: Rules and engine for reproducibility anti-pattern detection
+  contents:
+  - reproducibility-engine
+  - reproducibility-rules
+  - run_reproducibility_scan
+  - build_reproducibility_context
+
+- title: Recommendation engine
+  desc: Provider-based recommendation layer built on scan diagnostics
+  contents:
+  - recommendation-engine
+  - new_recommendation
+  - get_recommendation
+  - get_recommendations
+  - get_active_provider
+  - set_recommendation_provider
+  - register_recommendation_provider
+
+- title: Plugin discovery
+  desc: Runtime discovery of third-party RTrace plugin packages
+  contents:
+  - plugin-discovery
+  - discover_plugins
+  - is_rtrace_plugin
+  - list_plugin_packages
+  - plugin_description_snippet
+
+- title: Trace Platform
+  desc: Multi-engine platform orchestration and module registry
+  contents:
+  - trace-platform
+  - platform_name
+  - platform_version
+  - platform_scan
+  - list_modules
+  - register_module
+  - get_module
+
+- title: REST API
+  desc: Plumber-based HTTP API for running scans programmatically
+  contents:
+  - api
+  - api_curl_examples
+  - build_api_router
+  - start_api
