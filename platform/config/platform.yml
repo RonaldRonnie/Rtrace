@@ -1,0 +1,42 @@
+## Trace Platform Configuration
+## This file configures which modules are active and their weights in the
+## aggregate platform score. Individual module settings are still in rtrace.yml.
+
+platform_version: "0.2.0"
+
+## Active modules. Set to false to disable a module.
+modules:
+  rtrace:
+    enabled: true
+    weight: 1.5       # Architecture governance is the core module
+  reproducibility:
+    enabled: true
+    weight: 1.2
+  docstrace:
+    enabled: true
+    weight: 1.0
+  packageqa:
+    enabled: true
+    weight: 1.0
+  datatrace:
+    enabled: true
+    weight: 0.8
+
+## Aggregate score weights (override per module above)
+score_weights:
+  rtrace: 1.5
+  reproducibility: 1.2
+  docstrace: 1.0
+  packageqa: 1.0
+  datatrace: 0.8
+
+## REST API settings
+api:
+  default_host: "127.0.0.1"
+  default_port: 8394
+  cors_allowed_origins: ["http://localhost:3000"]
+
+## Plugin discovery
+plugins:
+  auto_discover: true    # Scan .libPaths() on package load
+  description_field: "Config/rtrace/plugin"

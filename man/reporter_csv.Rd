@@ -14,5 +14,8 @@ Character scalar CSV text (including a header row).
 }
 \description{
 One row per diagnostic, columns \verb{rule_id, severity, file, line, column, message, suggestion, doc_url} (see \code{\link[=as.data.frame.rtrace_diagnostic_set]{as.data.frame.rtrace_diagnostic_set()}}).
-Missing values are written as empty fields, not the string \code{"NA"}.
+Missing values are written as empty fields, not the string \code{"NA"}. The
+\code{file}, \code{message}, and \code{suggestion} columns are sanitized against CSV
+formula injection (see \code{sanitize_csv_field()}) since they can echo
+scanned, potentially untrusted source content.
 }

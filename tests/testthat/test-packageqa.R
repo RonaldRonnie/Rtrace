@@ -1,0 +1,207 @@
+test_that("run_packageqa_scan returns expected structure", {
+  root <- local_project(list(
+    "DESCRIPTION" = "Package: testpkg\nVersion: 0.1.0\nTitle: Test Package\n"
+  ))
+  result <- run_packageqa_scan(root)
+  expect_named(result, c("is_package", "diagnostics", "score"))
+  expect_true(result$is_package)
+  expect_s3_class(result$diagnostics, "rtrace_diagnostic_set")
+  expect_s3_class(result$score, "trace_score")
+  expect_equal(result$score$module_id, "packageqa")
+})
+
+test_that("run_packageqa_scan returns is_package=FALSE for non-package project", {
+  root <- local_project(list("R/analysis.R" = "x <- 1"))
+  result <- run_packageqa_scan(root)
+  expect_false(result$is_package)
+})
+
+test_that("packageqa.descriptionComplete fires for missing required fields", {
+  root <- local_project(list(
+    "DESCRIPTION" = "Package: testpkg\nVersion: 0.1.0\n"
+    # Missing: Title, Description, Author, License
+  ))
+  result <- run_packageqa_scan(root)
+  diag_ids <- vapply(result$diagnostics$diagnostics, function(d) d$rule_id, character(1))
+  expect_true("packageqa.descriptionComplete" %in% diag_ids)
+})
+
+test_that("packageqa.descriptionComplete is silent for complete DESCRIPTION", {
+  desc <- paste(
+    "Package: testpkg",
+    "Version: 0.1.0",
+    "Title: A Test Package",
+    "Description: This package does things.",
+    "Authors@R: person('Jane', 'Doe', email='j@example.com', role=c('aut','cre'))",
+    "License: MIT + file LICENSE",
+    "Encoding: UTF-8",
+    "URL: https://github.com/example/testpkg",
+    "BugReports: https://github.com/example/testpkg/issues",
+    sep = "\n"
+  )
+  root <- local_project(list("DESCRIPTION" = desc))
+  result <- run_packageqa_scan(root)
+  diag_ids <- vapply(result$diagnostics$diagnostics, function(d) d$rule_id, character(1))
+  expect_false("packageqa.descriptionComplete" %in% diag_ids)
+})
+
+test_that("packageqa.descriptionTitle fires for title with trailing period", {
+  desc <- paste(
+    "Package: testpkg",
+    "Version: 0.1.0",
+    "Title: A Test Package.",  # trailing period violates CRAN policy
+    "Description: This package does things.",
+    "Authors@R: person('Jane', 'Doe', role=c('aut','cre'))",
+    "License: MIT",
+    sep = "\n"
+  )
+  root <- local_project(list("DESCRIPTION" = desc))
+  result <- run_packageqa_scan(root)
+  diag_ids <- vapply(result$diagnostics$diagnostics, function(d) d$rule_id, character(1))
+  expect_true("packageqa.descriptionTitle" %in% diag_ids)
+})
+
+test_that("packageqa.descriptionTitle is silent for descriptive title", {
+  desc <- paste(
+    "Package: testpkg",
+    "Version: 0.1.0",
+    "Title: A Comprehensive Statistical Computing Framework",
+    "Description: Provides tools for analysis.",
+    "Authors@R: person('Jane', 'Doe', role=c('aut','cre'))",
+    "License: MIT",
+    sep = "\n"
+  )
+  root <- local_project(list("DESCRIPTION" = desc))
+  result <- run_packageqa_scan(root)
+  diag_ids <- vapply(result$diagnostics$diagnostics, function(d) d$rule_id, character(1))
+  expect_false("packageqa.descriptionTitle" %in% diag_ids)
+})
+
+test_that("packageqa.licensePresent fires when no LICENSE file exists", {
+  desc <- paste(
+    "Package: testpkg",
+    "Version: 0.1.0",
+    "Title: A Test Package For Licensing",
+    "Description: Provides analysis tools.",
+    "Authors@R: person('Jane', 'Doe', role=c('aut','cre'))",
+    "License: MIT + file LICENSE",
+    sep = "\n"
+  )
+  root <- local_project(list("DESCRIPTION" = desc))
+  # No LICENSE file created
+  result <- run_packageqa_scan(root)
+  diag_ids <- vapply(result$diagnostics$diagnostics, function(d) d$rule_id, character(1))
+  expect_true("packageqa.licensePresent" %in% diag_ids)
+})
+
+test_that("packageqa.licensePresent is silent when LICENSE exists", {
+  desc <- paste(
+    "Package: testpkg",
+    "Version: 0.1.0",
+    "Title: A Test Package For Licensing",
+    "Description: Provides analysis tools.",
+    "Authors@R: person('Jane', 'Doe', role=c('aut','cre'))",
+    "License: MIT + file LICENSE",
+    sep = "\n"
+  )
+  root <- local_project(list(
+    "DESCRIPTION" = desc,
+    "LICENSE"     = "MIT License\n\nCopyright (c) 2024"
+  ))
+  result <- run_packageqa_scan(root)
+  diag_ids <- vapply(result$diagnostics$diagnostics, function(d) d$rule_id, character(1))
+  expect_false("packageqa.licensePresent" %in% diag_ids)
+})
+
+test_that("packageqa.versionFormat fires for non-semver version", {
+  desc <- paste(
+    "Package: testpkg",
+    "Version: 1",  # not semver
+    "Title: Test Package One",
+    "Description: A test.",
+    "Authors@R: person('J', 'D', role=c('aut','cre'))",
+    "License: MIT",
+    sep = "\n"
+  )
+  root <- local_project(list("DESCRIPTION" = desc))
+  result <- run_packageqa_scan(root)
+  diag_ids <- vapply(result$diagnostics$diagnostics, function(d) d$rule_id, character(1))
+  expect_true("packageqa.versionFormat" %in% diag_ids)
+})
+
+test_that("packageqa.versionFormat is silent for valid version", {
+  desc <- paste(
+    "Package: testpkg",
+    "Version: 1.2.3",
+    "Title: Test Package Three",
+    "Description: A test.",
+    "Authors@R: person('J', 'D', role=c('aut','cre'))",
+    "License: MIT",
+    sep = "\n"
+  )
+  root <- local_project(list("DESCRIPTION" = desc))
+  result <- run_packageqa_scan(root)
+  diag_ids <- vapply(result$diagnostics$diagnostics, function(d) d$rule_id, character(1))
+  expect_false("packageqa.versionFormat" %in% diag_ids)
+})
+
+test_that("packageqa.newsFormat fires when NEWS.md has no version headers", {
+  desc <- paste(
+    "Package: testpkg",
+    "Version: 0.1.0",
+    "Title: A Package With Malformed News",
+    "Description: A test.",
+    sep = "\n"
+  )
+  # NEWS.md exists but lacks standard "# PkgName X.Y.Z" version headers
+  root <- local_project(list(
+    "DESCRIPTION" = desc,
+    "NEWS.md"     = "Changes:\n- Fixed a bug\n- Added a feature\n"
+  ))
+  result <- run_packageqa_scan(root)
+  diag_ids <- vapply(result$diagnostics$diagnostics, function(d) d$rule_id, character(1))
+  expect_true("packageqa.newsFormat" %in% diag_ids)
+})
+
+test_that("run_packageqa_scan returns high score for a clean package", {
+  desc <- paste(
+    "Package: bestpkg",
+    "Version: 1.0.0",
+    "Title: The Best Statistical Computing Package",
+    "Description: A comprehensive package for statistical computing and data analysis.",
+    "Authors@R: person('Jane', 'Doe', email='jane@example.com', role=c('aut','cre'))",
+    "License: MIT + file LICENSE",
+    "Encoding: UTF-8",
+    "URL: https://github.com/example/bestpkg",
+    "BugReports: https://github.com/example/bestpkg/issues",
+    sep = "\n"
+  )
+  root <- local_project(list(
+    "DESCRIPTION"      = desc,
+    "LICENSE"          = "MIT License",
+    "LICENSE.md"       = "MIT License\n\nCopyright 2024",
+    "NEWS.md"          = "# bestpkg 1.0.0\n\n* Initial release on CRAN.",
+    "NAMESPACE"        = "# Generated by roxygen2\nexport(run)\nimportFrom(stats, lm)\n",
+    "tests/testthat.R" = "library(testthat)\ntest_check('bestpkg')",
+    "tests/testthat/test-main.R" = "test_that('works', expect_true(TRUE))"
+  ))
+  result <- run_packageqa_scan(root)
+  expect_gte(result$score$score, 85L)
+})
+
+test_that("parse_description handles multi-line fields correctly", {
+  desc <- paste(
+    "Package: testpkg",
+    "Description: This is a long description",
+    "    that spans multiple lines",
+    "    in the DESCRIPTION file.",
+    "Version: 0.1.0",
+    sep = "\n"
+  )
+  tmp <- tempfile()
+  writeLines(desc, tmp)
+  parsed <- RTrace:::parse_description(tmp)
+  expect_true(grepl("multiple lines", parsed$Description))
+  expect_equal(parsed$Version, "0.1.0")
+  unlink(tmp)
+})

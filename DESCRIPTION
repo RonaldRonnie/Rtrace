@@ -1,19 +1,27 @@
 Package: RTrace
-Title: Architecture Governance and Static Analysis for R Projects
-Version: 0.1.0.9000
+Title: Trace Platform — Architecture Governance and Quality Analysis for R
+Version: 0.2.0.9000
 Authors@R: c(
     person("RTrace", "Contributors", , "maintainers@rtrace.dev", role = c("aut", "cre"))
     )
-Description: A static analysis and architecture governance platform for R
-    projects and packages. RTrace scans R codebases for structural and
+Description: The Trace Platform is a comprehensive software quality and
+    architecture governance system for R projects and packages. RTrace is
+    the platform's founding module: it scans R codebases for structural and
     architectural problems that style checkers and linters do not address,
     including layer/dependency-direction violations, circular module
     dependencies, project structure conventions, complexity hotspots, and
     common anti-patterns ('<<-', 'assign()', 'setwd()', hardcoded paths).
-    Rules are declared in a versioned YAML configuration file and evaluated
-    by an extensible rule engine, producing diagnostics that can be rendered
-    as colored console output, 'JSON', 'Markdown', 'HTML', 'CSV', 'XML', or
-    'SARIF' for use in interactive development and continuous integration.
+    Additional platform modules cover reproducibility hygiene, data quality
+    (DataTrace), documentation quality (DocsTrace), and package metadata
+    completeness (PackageQA). Rules are declared in a versioned YAML
+    configuration file and evaluated by an extensible rule engine, producing
+    diagnostics rendered as colored console output, 'JSON', 'Markdown',
+    'HTML', 'CSV', 'XML', or 'SARIF'. A unified scoring system aggregates
+    findings from all modules into 0-100 health scores per module and for
+    the platform as a whole. A provider-agnostic AI recommendation engine
+    explains every violation with context, impact, and fix guidance. An
+    optional REST API (requires 'plumber') exposes all functionality over
+    HTTP for SaaS and CI/CD integration.
 License: MIT + file LICENSE
 URL: https://github.com/rtrace-dev/rtrace
 BugReports: https://github.com/rtrace-dev/rtrace/issues
@@ -28,11 +36,14 @@ Imports:
     utils,
     yaml (>= 2.3.0)
 Suggests:
+    plumber (>= 1.2.0),
     rstudioapi,
     testthat (>= 3.0.0),
     withr,
     xml2
 Config/testthat/edition: 3
+Config/rtrace/plugin: true
+Config/rtrace/module-id: rtrace
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 Config/roxygen2/version: 8.0.0

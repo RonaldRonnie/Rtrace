@@ -26,7 +26,7 @@ sanitize_csv_field <- function(x) {
 #' message, suggestion, doc_url` (see [as.data.frame.rtrace_diagnostic_set()]).
 #' Missing values are written as empty fields, not the string `"NA"`. The
 #' `file`, `message`, and `suggestion` columns are sanitized against CSV
-#' formula injection (see [sanitize_csv_field()]) since they can echo
+#' formula injection (see `sanitize_csv_field()`) since they can echo
 #' scanned, potentially untrusted source content.
 #'
 #' @param diagnostics An `rtrace_diagnostic_set`.

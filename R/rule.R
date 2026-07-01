@@ -19,6 +19,10 @@ Rule <- R6::R6Class("Rule",
     description = NULL,
     default_severity = "warning",
     default_params = list(),
+    # Mutable environment for engine-specific check functions (datatrace,
+    # docstrace, packageqa).  Stored as an environment so it can be mutated
+    # even after R6 locks the public binding.
+    domain_fns = NULL,
 
     #' @param id Rule id.
     #' @param description One-line description.
@@ -35,6 +39,7 @@ Rule <- R6::R6Class("Rule",
       self$description <- description
       self$default_severity <- default_severity
       self$default_params <- default_params
+      self$domain_fns <- new.env(parent = emptyenv())
       private$check_fn <- check_fn
     },
 

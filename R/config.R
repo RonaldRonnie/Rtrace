@@ -7,7 +7,14 @@
 #' @return Character vector of registered rule ids.
 #' @export
 known_rule_types <- function() {
-  names(rtrace_env$rule_registry)
+  all_ids <- names(rtrace_env$rule_registry)
+  # Exclude domain-specific rules that are not valid in rtrace.yml and do
+  # not fire during a standard run_scan() pass (they run via dedicated
+  # engines: run_datatrace_scan(), run_docstrace_scan(), etc.).
+  domain_prefixes <- c("datatrace\\.", "docstrace\\.", "packageqa\\.",
+                       "reproducibility\\.")
+  pattern <- paste0("^(", paste(domain_prefixes, collapse = "|"), ")")
+  all_ids[!grepl(pattern, all_ids)]
 }
 
 #' Build the default RTrace configuration

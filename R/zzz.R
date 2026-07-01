@@ -1,5 +1,7 @@
 #' @noRd
 .onLoad <- function(libname, pkgname) {
+
+  # --- Core architecture rules (RTrace 0.1.0) ---
   register_rule(rule_structure_required_dirs())
   register_rule(rule_dependency_forbidden())
   register_rule(rule_dependency_circular())
@@ -16,5 +18,72 @@
   register_rule(rule_ecosystem_shiny_structure())
   register_rule(rule_ecosystem_targets_structure())
   register_rule(rule_ecosystem_plumber_structure())
+
+  # --- Reproducibility rules (Trace Platform 0.2.0) ---
+  register_rule(rule_reproducibility_renv_lock())
+  register_rule(rule_reproducibility_random_seed())
+  register_rule(rule_reproducibility_temp_files())
+  register_rule(rule_reproducibility_external_download())
+  register_rule(rule_reproducibility_env_vars())
+  register_rule(rule_reproducibility_session_info())
+  register_rule(rule_reproducibility_portable_paths())
+  register_rule(rule_reproducibility_reproducible_reports())
+
+  # --- DataTrace rules (Trace Platform 0.2.0 + 0.3.0) ---
+  register_rule(rule_datatrace_read_error())
+  register_rule(rule_datatrace_missing_header())
+  register_rule(rule_datatrace_encoding_issue())
+  register_rule(rule_datatrace_no_data_files())
+  register_rule(rule_datatrace_large_csv_no_compression())
+  register_rule(rule_datatrace_schema_documentation())
+  register_rule(rule_datatrace_fair_findable())
+  register_rule(rule_datatrace_fair_accessible())
+  register_rule(rule_datatrace_fair_interoperable())
+  register_rule(rule_datatrace_fair_reusable())
+  register_rule(rule_datatrace_missing_values())
+  register_rule(rule_datatrace_duplicate_rows())
+  register_rule(rule_datatrace_json_dataset())
+
+  # --- DocsTrace rules (Trace Platform 0.2.0) ---
+  register_rule(rule_docstrace_readme())
+  register_rule(rule_docstrace_readme_quality())
+  register_rule(rule_docstrace_vignettes())
+  register_rule(rule_docstrace_pkgdown())
+  register_rule(rule_docstrace_examples_quality())
+  register_rule(rule_docstrace_changelog())
+  register_rule(rule_docstrace_contributing())
+  register_rule(rule_docstrace_citation())
+
+  # --- Package QA rules (Trace Platform 0.2.0) ---
+  register_rule(rule_packageqa_description_complete())
+  register_rule(rule_packageqa_description_title())
+  register_rule(rule_packageqa_namespace_hygiene())
+  register_rule(rule_packageqa_test_coverage())
+  register_rule(rule_packageqa_license())
+  register_rule(rule_packageqa_version_format())
+  register_rule(rule_packageqa_maintainer_contact())
+  register_rule(rule_packageqa_news_format())
+
+  # --- Register RTrace as the first platform module ---
+  register_module(list(
+    id          = "rtrace",
+    name        = "Architecture Governance (R)",
+    version     = tryCatch(
+      as.character(utils::packageVersion("RTrace")),
+      error = function(e) "0.2.0.dev"
+    ),
+    description = "Static analysis and architecture governance for R projects.",
+    languages   = "R",
+    scan_fn     = function(root, config) {
+      ctx <- build_context(root, config %||% default_config())
+      run_rules(ctx)
+    },
+    score_fn    = function(diags) {
+      s <- compute_score(diags, error_penalty = 10, warning_penalty = 3, info_penalty = 1)
+      s$module_id <- "rtrace"
+      s
+    }
+  ))
+
   invisible()
 }
