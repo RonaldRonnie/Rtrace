@@ -24,7 +24,8 @@ build_dependency_graph <- function(files, asts, root = NULL) {
   package_imports <- list()
   layer_edges <- list()
 
-  path_to_layer <- as.list(stats::setNames(files$layer, files$path))
+  fwd <- function(p) gsub("\\\\", "/", normalizePath(p, mustWork = FALSE))
+  path_to_layer <- as.list(stats::setNames(files$layer, fwd(files$path)))
   rel_to_abs <- stats::setNames(files$path, files$rel_path)
 
   for (i in seq_len(nrow(files))) {
@@ -39,7 +40,7 @@ build_dependency_graph <- function(files, asts, root = NULL) {
 
     targets <- extract_source_targets(ast, base_dir = dirname(path), root = root)
     for (target in targets) {
-      target_layer <- path_to_layer[[target]]
+      target_layer <- path_to_layer[[fwd(target)]]
       if (is.null(target_layer) || is.na(target_layer) || identical(target_layer, layer)) next
       layer_edges[[layer]] <- union(layer_edges[[layer]] %||% character(0), target_layer)
     }

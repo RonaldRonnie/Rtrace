@@ -5,8 +5,8 @@ test_that("build_context assembles files, asts, and a dependency graph", {
   context <- build_context(root, default_config())
   expect_s3_class(context, "rtrace_context")
   expect_equal(nrow(context$files), 1)
-  expect_true(file.path(root, "R/foo.R") %in% names(context$asts) ||
-    normalizePath(file.path(root, "R/foo.R")) %in% names(context$asts))
+  fwd <- function(p) gsub("\\\\", "/", normalizePath(p, mustWork = FALSE))
+  expect_true(fwd(file.path(root, "R/foo.R")) %in% vapply(names(context$asts), fwd, character(1)))
 })
 
 test_that("relative_path converts an absolute path back to project-relative", {

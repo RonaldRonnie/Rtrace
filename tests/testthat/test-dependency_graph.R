@@ -15,9 +15,10 @@ test_that("extract_source_targets resolves project-root-relative paths first", {
     "analysis/run.R" = "source('shiny/helpers.R')",
     "shiny/helpers.R" = "1"
   ))
+  fwd <- function(p) gsub("\\\\", "/", normalizePath(p, mustWork = FALSE))
   ast <- parse_file(file.path(root, "analysis/run.R"))
   targets <- extract_source_targets(ast, base_dir = file.path(root, "analysis"), root = root)
-  expect_equal(targets, normalizePath(file.path(root, "shiny/helpers.R")))
+  expect_equal(fwd(targets), fwd(file.path(root, "shiny/helpers.R")))
 })
 
 test_that("extract_source_targets falls back to the sourcing file's directory", {
@@ -25,9 +26,10 @@ test_that("extract_source_targets falls back to the sourcing file's directory", 
     "analysis/run.R" = "source('helper.R')",
     "analysis/helper.R" = "1"
   ))
+  fwd <- function(p) gsub("\\\\", "/", normalizePath(p, mustWork = FALSE))
   ast <- parse_file(file.path(root, "analysis/run.R"))
   targets <- extract_source_targets(ast, base_dir = file.path(root, "analysis"), root = root)
-  expect_equal(targets, normalizePath(file.path(root, "analysis/helper.R")))
+  expect_equal(fwd(targets), fwd(file.path(root, "analysis/helper.R")))
 })
 
 test_that("extract_source_targets ignores dynamically-constructed paths", {

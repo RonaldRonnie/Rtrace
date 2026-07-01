@@ -52,11 +52,12 @@ path_matches_any_glob <- function(rel_path, globs) {
 #'   `"(unassigned)"` if no configured layer matches).
 #' @export
 scan_files <- function(root, config = default_config()) {
-  root <- normalizePath(root, mustWork = TRUE)
+  root <- gsub("\\\\", "/", normalizePath(root, mustWork = TRUE))
   all_files <- list.files(
     root, pattern = "\\.[Rr]$", recursive = TRUE, full.names = TRUE,
     all.files = FALSE, no.. = TRUE
   )
+  all_files <- gsub("\\\\", "/", normalizePath(all_files, mustWork = TRUE))
   if (length(all_files) == 0) {
     return(data.frame(
       path = character(0), rel_path = character(0), layer = character(0),
