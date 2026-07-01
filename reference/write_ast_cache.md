@@ -17,7 +17,7 @@ write_ast_cache(root, cache)
 - cache:
 
   A named list as returned by
-  [`read_ast_cache()`](https://rtrace-dev.github.io/rtrace/reference/read_ast_cache.md).
+  [`read_ast_cache()`](https://ronaldronnie.github.io/Rtrace/reference/read_ast_cache.md).
 
 ## Value
 

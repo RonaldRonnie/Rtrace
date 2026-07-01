@@ -43,7 +43,7 @@
   inline SVG diagram of the configured `layers:` dependency graph, with
   cyclic edges drawn in red. Pure SVG, no external JS/CSS — still a
   single standalone file.
-  [`reporter_html()`](https://rtrace-dev.github.io/rtrace/reference/reporter_html.md)
+  [`reporter_html()`](https://ronaldronnie.github.io/Rtrace/reference/reporter_html.md)
   gained optional `layers`/ `layer_graph` parameters (default empty, so
   its primary `diagnostics`-only contract is unchanged).
 - `rtrace benchmark` CLI command: times each scan phase (file walk,

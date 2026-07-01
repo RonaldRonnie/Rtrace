@@ -18,7 +18,7 @@ build_dependency_graph(files, asts, root = NULL)
 - files:
 
   A `data.frame` as returned by
-  [`scan_files()`](https://rtrace-dev.github.io/rtrace/reference/scan_files.md)
+  [`scan_files()`](https://ronaldronnie.github.io/Rtrace/reference/scan_files.md)
   (`path`, `rel_path`, `layer`).
 
 - asts:

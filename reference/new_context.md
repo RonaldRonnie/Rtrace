@@ -1,7 +1,7 @@
 # Build a rule evaluation context
 
 Bundles everything a
-[Rule](https://rtrace-dev.github.io/rtrace/reference/Rule.md) needs so
+[Rule](https://ronaldronnie.github.io/Rtrace/reference/Rule.md) needs so
 rules never re-walk the filesystem or re-parse files themselves (see ADR
 0002).
 
@@ -24,7 +24,7 @@ new_context(root, config, files, asts, dependency_graph)
 - files:
 
   A `data.frame` as returned by
-  [`scan_files()`](https://rtrace-dev.github.io/rtrace/reference/scan_files.md).
+  [`scan_files()`](https://ronaldronnie.github.io/Rtrace/reference/scan_files.md).
 
 - asts:
 
@@ -33,7 +33,7 @@ new_context(root, config, files, asts, dependency_graph)
 - dependency_graph:
 
   A list as returned by
-  [`build_dependency_graph()`](https://rtrace-dev.github.io/rtrace/reference/build_dependency_graph.md).
+  [`build_dependency_graph()`](https://ronaldronnie.github.io/Rtrace/reference/build_dependency_graph.md).
 
 ## Value
 

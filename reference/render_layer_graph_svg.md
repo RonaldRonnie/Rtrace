@@ -5,7 +5,7 @@ circle): not a general graph-layout algorithm, and edge/label overlap is
 not optimized away, but it's legible for the small-to-moderate layer
 counts (well under 15) typical of an RTrace `layers:` configuration. No
 external JS/CSS — pure inline SVG, consistent with
-[`reporter_html()`](https://rtrace-dev.github.io/rtrace/reference/reporter_html.md)
+[`reporter_html()`](https://ronaldronnie.github.io/Rtrace/reference/reporter_html.md)
 being a single standalone file.
 
 ## Usage
@@ -38,5 +38,5 @@ empty.
 ## Details
 
 Edges that participate in a cycle (per
-[`find_cycles()`](https://rtrace-dev.github.io/rtrace/reference/find_cycles.md))
+[`find_cycles()`](https://ronaldronnie.github.io/Rtrace/reference/find_cycles.md))
 are drawn in red; all other edges are drawn in gray.

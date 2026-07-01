@@ -1,9 +1,9 @@
 # Run a full RTrace scan over a project directory
 
 Convenience wrapper combining
-[`build_context()`](https://rtrace-dev.github.io/rtrace/reference/build_context.md)
+[`build_context()`](https://ronaldronnie.github.io/Rtrace/reference/build_context.md)
 and
-[`run_rules()`](https://rtrace-dev.github.io/rtrace/reference/run_rules.md)
+[`run_rules()`](https://ronaldronnie.github.io/Rtrace/reference/run_rules.md)
 — the top-level entry point used by the CLI's `scan` command and by R
 scripts that want to run RTrace programmatically.
 
@@ -22,12 +22,12 @@ run_scan(root = ".", config = default_config(), use_cache = FALSE)
 - config:
 
   An `rtrace_config` object. Defaults to
-  [`default_config()`](https://rtrace-dev.github.io/rtrace/reference/default_config.md).
+  [`default_config()`](https://ronaldronnie.github.io/Rtrace/reference/default_config.md).
 
 - use_cache:
 
   Logical, passed through to
-  [`build_context()`](https://rtrace-dev.github.io/rtrace/reference/build_context.md).
+  [`build_context()`](https://ronaldronnie.github.io/Rtrace/reference/build_context.md).
   Default `FALSE`.
 
 ## Value

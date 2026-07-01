@@ -26,7 +26,7 @@ extract_source_targets(ast, base_dir, root = NULL)
 - root:
 
   Optional project root, tried first (see
-  [`build_dependency_graph()`](https://rtrace-dev.github.io/rtrace/reference/build_dependency_graph.md)).
+  [`build_dependency_graph()`](https://ronaldronnie.github.io/Rtrace/reference/build_dependency_graph.md)).
 
 ## Value
 

@@ -1,7 +1,7 @@
 # Walk a project directory for R source files
 
 Discovers `.R`/`.r` files under `root`, skipping
-[`default_excludes()`](https://rtrace-dev.github.io/rtrace/reference/default_excludes.md)
+[`default_excludes()`](https://ronaldronnie.github.io/Rtrace/reference/default_excludes.md)
 plus any patterns declared in `config$exclude`, then assigns each
 surviving file to a configured layer via longest-glob-prefix match
 against `config$layers`.
@@ -21,7 +21,7 @@ scan_files(root, config = default_config())
 - config:
 
   An `rtrace_config` object (see
-  [`read_config()`](https://rtrace-dev.github.io/rtrace/reference/read_config.md)).
+  [`read_config()`](https://ronaldronnie.github.io/Rtrace/reference/read_config.md)).
 
 ## Value
 

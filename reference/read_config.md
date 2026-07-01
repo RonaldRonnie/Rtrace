@@ -17,4 +17,4 @@ read_config(path)
 ## Value
 
 An `rtrace_config` object, validated via
-[`validate_config()`](https://rtrace-dev.github.io/rtrace/reference/validate_config.md).
+[`validate_config()`](https://ronaldronnie.github.io/Rtrace/reference/validate_config.md).

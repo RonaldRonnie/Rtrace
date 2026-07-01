@@ -12,7 +12,7 @@ complement [`lintr`](https://lintr.r-lib.org/),
 [`goodpractice`](https://github.com/ropensci-review-tools/goodpractice),
 and [`renv`](https://rstudio.github.io/renv/), not replace them. See
 [ADR
-0001](https://rtrace-dev.github.io/rtrace/dev/adr/0001-rtrace-scope-and-positioning.md)
+0001](https://ronaldronnie.github.io/Rtrace/dev/adr/0001-rtrace-scope-and-positioning.md)
 for the full positioning rationale.
 
 ## Installation
@@ -45,7 +45,7 @@ Rscript -e 'RTrace::rtrace_cli(commandArgs(TRUE))' init .
 ```
 
 This writes `rtrace.yml` to the project root. See the [configuration
-reference](https://rtrace-dev.github.io/rtrace/dev/configuration-reference.md)
+reference](https://ronaldronnie.github.io/Rtrace/dev/configuration-reference.md)
 for every rule and parameter.
 
 ## Example
@@ -67,7 +67,7 @@ forbidden dependency direction in this project’s policy) and uses
 
 A full worked example with every built-in rule triggered, plus the
 expected output, lives in
-[inst/examples/research-pipeline](https://rtrace-dev.github.io/rtrace/inst/examples/research-pipeline).
+[inst/examples/research-pipeline](https://ronaldronnie.github.io/Rtrace/inst/examples/research-pipeline).
 
 ## What RTrace checks
 
@@ -84,7 +84,7 @@ expected output, lives in
 
 Run `rtrace list-rules` for the full, current list with default
 severities, or see
-[dev/rules-reference.md](https://rtrace-dev.github.io/rtrace/dev/rules-reference.md)
+[dev/rules-reference.md](https://ronaldronnie.github.io/Rtrace/dev/rules-reference.md)
 for parameters and examples of each.
 
 ## RStudio
@@ -95,18 +95,19 @@ the architecture-overview diagram — in the Viewer pane.
 
 ## Documentation
 
-- [Quick Start](https://rtrace-dev.github.io/rtrace/dev/quick-start.md)
+- [Quick
+  Start](https://ronaldronnie.github.io/Rtrace/dev/quick-start.md)
 - [Configuration
-  Reference](https://rtrace-dev.github.io/rtrace/dev/configuration-reference.md)
+  Reference](https://ronaldronnie.github.io/Rtrace/dev/configuration-reference.md)
 - [Rules
-  Reference](https://rtrace-dev.github.io/rtrace/dev/rules-reference.md)
+  Reference](https://ronaldronnie.github.io/Rtrace/dev/rules-reference.md)
 - [Rule Authoring
-  Guide](https://rtrace-dev.github.io/rtrace/dev/rule-authoring-guide.md)
+  Guide](https://ronaldronnie.github.io/Rtrace/dev/rule-authoring-guide.md)
 - [CLI
-  Reference](https://rtrace-dev.github.io/rtrace/dev/cli-reference.md)
+  Reference](https://ronaldronnie.github.io/Rtrace/dev/cli-reference.md)
 - [Architecture Decision
-  Records](https://rtrace-dev.github.io/rtrace/dev/adr/)
-- [Roadmap](https://rtrace-dev.github.io/rtrace/dev/roadmap.md)
+  Records](https://ronaldronnie.github.io/Rtrace/dev/adr/)
+- [Roadmap](https://ronaldronnie.github.io/Rtrace/dev/roadmap.md)
 
 ## Status
 
@@ -116,18 +117,18 @@ RStudio Addin, all seven reporters (console/JSON/Markdown/SARIF/HTML —
 with an inline SVG architecture diagram — CSV/XML), an opt-in AST parse
 cache for incremental scanning, and 16 built-in rules are implemented
 and tested; see
-[dev/roadmap.md](https://rtrace-dev.github.io/rtrace/dev/roadmap.md) for
-what is shipped versus planned (a per-rule diagnostic cache, plugin
+[dev/roadmap.md](https://ronaldronnie.github.io/Rtrace/dev/roadmap.md)
+for what is shipped versus planned (a per-rule diagnostic cache, plugin
 discovery, a VS Code extension).
 
 ## Contributing
 
 See
-[CONTRIBUTING.md](https://rtrace-dev.github.io/rtrace/CONTRIBUTING.md).
+[CONTRIBUTING.md](https://ronaldronnie.github.io/Rtrace/CONTRIBUTING.md).
 This project follows the [Contributor
-Covenant](https://rtrace-dev.github.io/rtrace/CODE_OF_CONDUCT.md).
+Covenant](https://ronaldronnie.github.io/Rtrace/CODE_OF_CONDUCT.md).
 
 ## License
 
 MIT © RTrace Contributors. See
-[LICENSE.md](https://rtrace-dev.github.io/rtrace/LICENSE.md).
+[LICENSE.md](https://ronaldronnie.github.io/Rtrace/LICENSE.md).

@@ -27,4 +27,4 @@ parse_files_cached(paths, root, use_cache = FALSE)
 
 A named list of `rtrace_file_ast`, keyed by absolute path — same shape
 as parsing every file directly with
-[`parse_file()`](https://rtrace-dev.github.io/rtrace/reference/parse_file.md).
+[`parse_file()`](https://ronaldronnie.github.io/Rtrace/reference/parse_file.md).

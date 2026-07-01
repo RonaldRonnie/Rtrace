@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">RTrace</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,7 +28,7 @@
     <li><a class="external-link dropdown-item" href="https://github.com/rtrace-dev/rtrace/tree/main/dev/adr">Architecture Decision Records</a></li>
     <li><a class="external-link dropdown-item" href="https://github.com/rtrace-dev/rtrace/blob/main/dev/roadmap.md">Roadmap</a></li>
   </ul></li>
-      </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/rtrace-dev/rtrace/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+      </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/RonaldRonnie/Rtrace/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul></div>
 
 
@@ -38,7 +38,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Contributing to RTrace</h1>
-      <small class="dont-index">Source: <a href="https://github.com/rtrace-dev/rtrace/blob/main/CONTRIBUTING.md" class="external-link"><code>CONTRIBUTING.md</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/RonaldRonnie/Rtrace/blob/main/CONTRIBUTING.md" class="external-link"><code>CONTRIBUTING.md</code></a></small>
     </div>
 
 <div id="contributing-to-rtrace" class="section level1">
@@ -58,7 +58,7 @@
 <span><span class="fu">pkgload</span><span class="fu">::</span><span class="fu"><a href="https://pkgload.r-lib.org/reference/load_all.html" class="external-link">load_all</a></span><span class="op">(</span><span class="op">)</span>                                  <span class="co"># instead of devtools::load_all()</span></span>
 <span><span class="fu">roxygen2</span><span class="fu">::</span><span class="fu">roxygenise</span><span class="op">(</span><span class="op">)</span>                                <span class="co"># instead of devtools::document()</span></span>
 <span><span class="fu">testthat</span><span class="fu">::</span><span class="fu"><a href="https://testthat.r-lib.org/reference/test_dir.html" class="external-link">test_dir</a></span><span class="op">(</span><span class="st">"tests/testthat"</span><span class="op">)</span>                  <span class="co"># instead of devtools::test()</span></span>
-<span><span class="fu">rcmdcheck</span><span class="fu">::</span><span class="fu">rcmdcheck</span><span class="op">(</span>args <span class="op">=</span> <span class="st">"--no-manual"</span><span class="op">)</span>             <span class="co"># instead of devtools::check()</span></span></code></pre></div>
+<span><span class="fu">rcmdcheck</span><span class="fu">::</span><span class="fu"><a href="http://r-lib.github.io/rcmdcheck/reference/rcmdcheck.html" class="external-link">rcmdcheck</a></span><span class="op">(</span>args <span class="op">=</span> <span class="st">"--no-manual"</span><span class="op">)</span>             <span class="co"># instead of devtools::check()</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="before-opening-a-pull-request">Before opening a pull request<a class="anchor" aria-label="anchor" href="#before-opening-a-pull-request"></a></h2>
@@ -67,7 +67,7 @@
 <li>
 <code>devtools::test()</code> (or <code>testthat::test_dir("tests/testthat")</code>) — all tests must pass.</li>
 <li>
-<code>devtools::check()</code> (or <code>rcmdcheck::rcmdcheck()</code>) — should be free of errors and warnings; new NOTEs should be explained in the PR description.</li>
+<code>devtools::check()</code> (or <code><a href="http://r-lib.github.io/rcmdcheck/reference/rcmdcheck.html" class="external-link">rcmdcheck::rcmdcheck()</a></code>) — should be free of errors and warnings; new NOTEs should be explained in the PR description.</li>
 <li>Add a <code>NEWS.md</code> bullet under the current development-version heading describing the user-visible change.</li>
 <li>If you added or changed a rule, update its entry in <code>dev/rules-reference.md</code> and add positive/negative fixtures to <code>tests/testthat/test-rules-builtin.R</code>.</li>
 </ol></div>

@@ -16,5 +16,5 @@ get_rule(id)
 
 ## Value
 
-A [Rule](https://rtrace-dev.github.io/rtrace/reference/Rule.md)
+A [Rule](https://ronaldronnie.github.io/Rtrace/reference/Rule.md)
 instance, or `NULL` if not registered.

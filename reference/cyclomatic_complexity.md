@@ -16,7 +16,7 @@ cyclomatic_complexity(fn_expr)
 - fn_expr:
 
   A function expression (the value returned in the `expr` field of
-  [`top_level_functions()`](https://rtrace-dev.github.io/rtrace/reference/top_level_functions.md)
+  [`top_level_functions()`](https://ronaldronnie.github.io/Rtrace/reference/top_level_functions.md)
   entries).
 
 ## Value

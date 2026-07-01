@@ -10,5 +10,6 @@ list_rules()
 
 ## Value
 
-A list of [Rule](https://rtrace-dev.github.io/rtrace/reference/Rule.md)
+A list of
+[Rule](https://ronaldronnie.github.io/Rtrace/reference/Rule.md)
 instances.

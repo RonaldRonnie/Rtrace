@@ -32,7 +32,7 @@ reporter_html(
   `setdiff(unique(context$files$layer), "(unassigned)")`). When
   non-empty, an "Architecture Overview" section is rendered above the
   diagnostics list via
-  [`render_layer_graph_svg()`](https://rtrace-dev.github.io/rtrace/reference/render_layer_graph_svg.md).
+  [`render_layer_graph_svg()`](https://ronaldronnie.github.io/Rtrace/reference/render_layer_graph_svg.md).
   Omit (the default) for a diagnostics-only report — `reporter_html()`'s
   primary contract is still just `diagnostics`, like every other
   reporter (see ADR 0002).

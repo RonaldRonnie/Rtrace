@@ -36,9 +36,10 @@ rcmdcheck::rcmdcheck(args = "--no-manual")             # instead of devtools::ch
     `NAMESPACE` or files under `man/`.
 2.  `devtools::test()` (or `testthat::test_dir("tests/testthat")`) — all
     tests must pass.
-3.  `devtools::check()` (or `rcmdcheck::rcmdcheck()`) — should be free
-    of errors and warnings; new NOTEs should be explained in the PR
-    description.
+3.  `devtools::check()` (or
+    [`rcmdcheck::rcmdcheck()`](http://r-lib.github.io/rcmdcheck/reference/rcmdcheck.md))
+    — should be free of errors and warnings; new NOTEs should be
+    explained in the PR description.
 4.  Add a `NEWS.md` bullet under the current development-version heading
     describing the user-visible change.
 5.  If you added or changed a rule, update its entry in
@@ -48,19 +49,19 @@ rcmdcheck::rcmdcheck(args = "--no-manual")             # instead of devtools::ch
 ## Adding a new built-in rule
 
 See
-[dev/rule-authoring-guide.md](https://rtrace-dev.github.io/rtrace/dev/rule-authoring-guide.md)
+[dev/rule-authoring-guide.md](https://ronaldronnie.github.io/Rtrace/dev/rule-authoring-guide.md)
 for the full walkthrough, including why rules are registered centrally
 rather than via a top-level
-[`register_rule()`](https://rtrace-dev.github.io/rtrace/reference/register_rule.md)
+[`register_rule()`](https://ronaldronnie.github.io/Rtrace/reference/register_rule.md)
 call in each rule’s own file. In short:
 
 1.  Create `R/rules_<category>.R` with a `rule_<name>()` constructor
     function that returns a `Rule` instance — it does **not** call
-    [`register_rule()`](https://rtrace-dev.github.io/rtrace/reference/register_rule.md)
+    [`register_rule()`](https://ronaldronnie.github.io/Rtrace/reference/register_rule.md)
     itself.
 2.  Add `register_rule(rule_<name>())` to `.onLoad()` in `R/zzz.R`.
 3.  Add it to
-    [`inst/templates/rtrace.yml`](https://rtrace-dev.github.io/rtrace/inst/templates/rtrace.yml)
+    [`inst/templates/rtrace.yml`](https://ronaldronnie.github.io/Rtrace/inst/templates/rtrace.yml)
     and document it in `dev/rules-reference.md`.
 4.  Add test cases to `tests/testthat/test-rules-builtin.R`: at least
     one fixture that should trigger the rule and one that should not.
@@ -71,7 +72,7 @@ Implement a function matching `function(diagnostics, ...)` returning a
 character string (or, for interactive reporters, writing to stdout),
 wire it into the `--format` switch in `R/cli_commands.R`, and add
 `tests/testthat/test-reporter-<name>.R`. See [ADR
-0002](https://rtrace-dev.github.io/rtrace/dev/adr/0002-core-architecture.html#reporters-r-reporter_r)
+0002](https://ronaldronnie.github.io/Rtrace/dev/adr/0002-core-architecture.html#reporters-r-reporter_r)
 for the reporter contract.
 
 ## Commit and PR style
@@ -85,7 +86,7 @@ for the reporter contract.
 
 RTrace is, fittingly, linted with `lintr` and formatted with `styler` in
 CI (see [ADR
-0001](https://rtrace-dev.github.io/rtrace/dev/adr/0001-rtrace-scope-and-positioning.md)
+0001](https://ronaldronnie.github.io/Rtrace/dev/adr/0001-rtrace-scope-and-positioning.md)
 for why RTrace itself does not reimplement style linting). Run both
 locally before pushing:
 
@@ -99,10 +100,10 @@ lintr::lint_package()
 
 Use the GitHub issue templates under `.github/ISSUE_TEMPLATE/`. Security
 issues should follow
-[SECURITY.md](https://rtrace-dev.github.io/rtrace/SECURITY.md) instead
+[SECURITY.md](https://ronaldronnie.github.io/Rtrace/SECURITY.md) instead
 of a public issue.
 
 ## Code of Conduct
 
 This project follows the [Contributor
-Covenant](https://rtrace-dev.github.io/rtrace/CODE_OF_CONDUCT.md).
+Covenant](https://ronaldronnie.github.io/Rtrace/CODE_OF_CONDUCT.md).

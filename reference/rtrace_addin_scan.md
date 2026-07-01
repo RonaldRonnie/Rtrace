@@ -2,7 +2,7 @@
 
 Detects the current RStudio project, runs a scan, writes an HTML report
 (see
-[`reporter_html()`](https://rtrace-dev.github.io/rtrace/reference/reporter_html.md))
+[`reporter_html()`](https://ronaldronnie.github.io/Rtrace/reference/reporter_html.md))
 to a temp file, and opens it in the RStudio Viewer pane — or the default
 browser outside RStudio. Registered via `inst/rstudio/addins.dcf` as
 "RTrace: Scan Project" in RStudio's Addins menu.

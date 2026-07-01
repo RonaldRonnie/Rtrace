@@ -1,4 +1,4 @@
 # License
 
     YEAR: 2026
-    COPYRIGHT HOLDER: RTrace Contributors
+    COPYRIGHT HOLDER: Ouma Ronald

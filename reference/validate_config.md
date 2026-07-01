@@ -2,7 +2,7 @@
 
 Checks structural validity and that every declared rule `type` is known.
 Called automatically by
-[`read_config()`](https://rtrace-dev.github.io/rtrace/reference/read_config.md);
+[`read_config()`](https://ronaldronnie.github.io/Rtrace/reference/read_config.md);
 exposed separately so the CLI's `validate` command can run it without
 triggering a scan.
 

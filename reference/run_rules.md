@@ -2,7 +2,7 @@
 
 Resolves the active rule set from `context$config$rules`, evaluates each
 enabled rule's
-[Rule](https://rtrace-dev.github.io/rtrace/reference/Rule.md)`$check()`,
+[Rule](https://ronaldronnie.github.io/Rtrace/reference/Rule.md)`$check()`,
 tags every diagnostic with the rule's *configured* severity (falling
 back to the rule's default severity), and collects results into a single
 `rtrace_diagnostic_set`.
@@ -18,7 +18,7 @@ run_rules(context)
 - context:
 
   An `rtrace_context` (see
-  [`build_context()`](https://rtrace-dev.github.io/rtrace/reference/build_context.md)).
+  [`build_context()`](https://ronaldronnie.github.io/Rtrace/reference/build_context.md)).
 
 ## Value
 

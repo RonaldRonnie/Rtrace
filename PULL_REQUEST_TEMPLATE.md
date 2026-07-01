@@ -17,7 +17,7 @@ If a rule was added/changed: `dev/rules-reference.md` updated and a
 fixture added under `tests/testthat/fixtures/`
 
 If a reporter was added/changed: documented in
-[dev/adr/0002-core-architecture.md](https://rtrace-dev.github.io/dev/adr/0002-core-architecture.md)
+[dev/adr/0002-core-architecture.md](https://ronaldronnie.github.io/dev/adr/0002-core-architecture.md)
 reporter contract section
 
 ## Related issue
