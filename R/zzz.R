@@ -64,14 +64,24 @@
   register_rule(rule_packageqa_maintainer_contact())
   register_rule(rule_packageqa_news_format())
 
-  # --- Register RTrace as the first platform module ---
+  # --- Register built-in Trace Platform modules ---
+  #
+  # This is the single place built-in modules are registered. platform_scan(),
+  # the CLI's `platform-scan` command, and the REST API's `/scan/full`
+  # endpoint all execute exactly the modules registered here (via
+  # register_module()) -- there is no separate "run every module" code path
+  # anywhere else. Adding a new built-in module means adding one
+  # register_module() call here; no CLI, API, or platform_scan() changes are
+  # required.
+  pkg_version <- tryCatch(
+    as.character(utils::packageVersion("RTrace")),
+    error = function(e) "0.2.0.dev"
+  )
+
   register_module(list(
     id          = "rtrace",
     name        = "Architecture Governance (R)",
-    version     = tryCatch(
-      as.character(utils::packageVersion("RTrace")),
-      error = function(e) "0.2.0.dev"
-    ),
+    version     = pkg_version,
     description = "Static analysis and architecture governance for R projects.",
     languages   = "R",
     scan_fn     = function(root, config) {
@@ -81,6 +91,70 @@
     score_fn    = function(diags) {
       s <- compute_score(diags, error_penalty = 10, warning_penalty = 3, info_penalty = 1)
       s$module_id <- "rtrace"
+      s
+    }
+  ))
+
+  register_module(list(
+    id          = "reproducibility",
+    name        = "Reproducibility",
+    version     = pkg_version,
+    description = "Checks lockfiles, seeds, and reproducibility hygiene.",
+    languages   = "R",
+    scan_fn     = function(root, config) {
+      run_reproducibility_scan(root, config %||% default_config())$diagnostics
+    },
+    score_fn    = function(diags) {
+      s <- compute_score(diags, error_penalty = 15, warning_penalty = 5, info_penalty = 1)
+      s$module_id <- "reproducibility"
+      s
+    }
+  ))
+
+  register_module(list(
+    id          = "docstrace",
+    name        = "DocsTrace",
+    version     = pkg_version,
+    description = "Evaluates documentation completeness and quality.",
+    languages   = "R",
+    scan_fn     = function(root, config) {
+      run_docstrace_scan(root)$diagnostics
+    },
+    score_fn    = function(diags) {
+      s <- compute_score(diags, error_penalty = 12, warning_penalty = 4, info_penalty = 1)
+      s$module_id <- "docstrace"
+      s
+    }
+  ))
+
+  register_module(list(
+    id          = "packageqa",
+    name        = "Package QA",
+    version     = pkg_version,
+    description = "Evaluates R package metadata and CRAN convention compliance.",
+    languages   = "R",
+    scan_fn     = function(root, config) {
+      run_packageqa_scan(root)$diagnostics
+    },
+    score_fn    = function(diags) {
+      s <- compute_score(diags, error_penalty = 12, warning_penalty = 5, info_penalty = 1)
+      s$module_id <- "packageqa"
+      s
+    }
+  ))
+
+  register_module(list(
+    id          = "datatrace",
+    name        = "DataTrace",
+    version     = pkg_version,
+    description = "Evaluates quality and FAIR-compliance of research data files.",
+    languages   = "data",
+    scan_fn     = function(root, config) {
+      run_datatrace_scan(root)$diagnostics
+    },
+    score_fn    = function(diags) {
+      s <- compute_score(diags, error_penalty = 8, warning_penalty = 3, info_penalty = 1)
+      s$module_id <- "datatrace"
       s
     }
   ))

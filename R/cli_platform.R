@@ -25,62 +25,34 @@ cmd_platform_scan <- function(options, positional) {
 
   cat(sprintf("Running Trace Platform scan on: %s\n", root))
 
-  context <- tryCatch(
-    build_context(root, config, use_cache = isTRUE(options$cache)),
+  # Single orchestration path: every registered module runs through
+  # platform_scan(), exactly as the REST API's /scan/full endpoint does. The
+  # CLI must never invoke individual module scan functions itself.
+  platform_result <- tryCatch(
+    platform_scan(root, config, use_cache = isTRUE(options$cache)),
     error = function(e) {
-      cat(sprintf("Error building context: %s\n", conditionMessage(e)))
-      return(NULL)
+      cat(sprintf("Error running platform scan: %s\n", conditionMessage(e)))
+      NULL
     }
   )
-  if (is.null(context)) return(1L)
+  if (is.null(platform_result)) return(1L)
 
-  diags <- run_rules(context)
-
-  # Run optional module scans
-  repro_result  <- tryCatch(run_reproducibility_scan(root, config), error = function(e) NULL)
-  docs_result   <- tryCatch(run_docstrace_scan(root), error = function(e) NULL)
-  pkgqa_result  <- tryCatch(run_packageqa_scan(root), error = function(e) NULL)
-  data_result   <- tryCatch(run_datatrace_scan(root), error = function(e) NULL)
-
-  all_diags <- diags
-  scores    <- list()
-
-  arch_score       <- compute_score(diags); arch_score$module_id <- "rtrace"
-  scores[["rtrace"]] <- arch_score
-
-  if (!is.null(repro_result)) {
-    all_diags             <- c(all_diags, repro_result$diagnostics)
-    scores[["reproducibility"]] <- repro_result$score
-  }
-  if (!is.null(docs_result)) {
-    all_diags            <- c(all_diags, docs_result$diagnostics)
-    scores[["docstrace"]] <- docs_result$score
-  }
-  if (!is.null(pkgqa_result)) {
-    all_diags             <- c(all_diags, pkgqa_result$diagnostics)
-    scores[["packageqa"]] <- pkgqa_result$score
-  }
-  if (!is.null(data_result)) {
-    all_diags             <- c(all_diags, data_result$diagnostics)
-    scores[["datatrace"]] <- data_result$score
-  }
-
-  platform_result <- list(
-    root            = normalizePath(root, mustWork = TRUE),
-    modules         = names(scores),
-    results         = list(),
-    scores          = scores,
-    all_diagnostics = all_diags,
-    timestamp       = Sys.time()
-  )
-  class(platform_result) <- "trace_platform_result"
+  all_diags <- platform_result$all_diagnostics
 
   if (format == "dashboard") {
-    layers <- setdiff(unique(context$files$layer), "(unassigned)")
-    html   <- reporter_dashboard(
+    # build_context() here is only for the architecture layer diagram; it is
+    # presentation metadata, not a second orchestration/diagnostics path.
+    context <- tryCatch(
+      build_context(root, config, use_cache = isTRUE(options$cache)),
+      error = function(e) NULL
+    )
+    layers      <- if (!is.null(context)) setdiff(unique(context$files$layer), "(unassigned)") else character(0)
+    layer_graph <- if (!is.null(context)) context$dependency_graph$layer_graph else list()
+
+    html <- reporter_dashboard(
       platform_result = platform_result,
       layers          = layers,
-      layer_graph     = context$dependency_graph$layer_graph,
+      layer_graph     = layer_graph,
       title           = sprintf("Trace Platform: %s", basename(root))
     )
     if (!is.null(options$output)) {
@@ -101,7 +73,7 @@ cmd_platform_scan <- function(options, positional) {
       timestamp       = format(platform_result$timestamp, "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
       root            = platform_result$root,
       modules         = platform_result$modules,
-      scores          = lapply(scores, function(s) list(score = s$score, label = s$label)),
+      scores          = lapply(platform_result$scores, function(s) list(score = s$score, label = s$label)),
       total_violations = length(all_diags),
       summary         = as.list(summary(all_diags))
     )
