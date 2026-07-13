@@ -154,20 +154,37 @@ New modules that require heavy packages (`readxl`, `arrow`, `plumber`) use
 
 ## Data Flow: Scan Request to Dashboard
 
+There is exactly **one** orchestration path. `cmd_platform_scan()` (CLI) and
+the `/scan/full` REST handler never invoke a module's scan function
+themselves -- both call `platform_scan()`, which is the only code in the
+platform that iterates the module registry and runs `scan_fn()`/`score_fn()`
+for each entry. This was not always true: prior to the module-registration
+fix, `cmd_platform_scan()` hard-coded calls to each engine's
+`run_*_scan()` function while `platform_scan()` only iterated
+`list_modules()` -- and only `"rtrace"` was ever registered at load time, so
+the two interfaces silently diverged (Issue #1). Every built-in module is
+now registered in `.onLoad()` (`R/zzz.R`), which closes that gap structurally
+rather than patching either call site individually.
+
 ```
 1. User runs: rtrace platform-scan path/to/project
    (or: POST /scan/full with {"root": "path/to/project"})
 
 2. cmd_platform_scan() / API handler
    │
-   ├── build_context(root, config)          # parse R files once, shared
-   ├── run_rules(context)                   # architecture diagnostics
-   ├── run_reproducibility_scan(root)       # reproducibility diagnostics
-   ├── run_docstrace_scan(root)             # documentation diagnostics
-   ├── run_packageqa_scan(root)             # package QA diagnostics
-   └── run_datatrace_scan(root)             # data quality diagnostics
+   └── platform_scan(root, config)
+         │
+         └── for each module in list_modules():   # registered in .onLoad()
+               ├── rtrace            → build_context() + run_rules()
+               ├── reproducibility   → run_reproducibility_scan()
+               ├── docstrace         → run_docstrace_scan()
+               ├── packageqa         → run_packageqa_scan()
+               └── datatrace         → run_datatrace_scan()
 
-3. compute_score() per module → 5 × trace_score
+3. score_fn(diagnostics) per module → N × trace_score
+   (a module that throws during scan_fn/score_fn is caught, logged as a
+   warning, and contributes an empty diagnostic set / zero score rather
+   than aborting the whole scan)
 
 4. aggregate_scores() → 1 platform trace_score
 
@@ -178,6 +195,12 @@ New modules that require heavy packages (`readxl`, `arrow`, `plumber`) use
 
 7. Opened in browser / RStudio Viewer / saved as CI artifact
 ```
+
+Single-module entry points (`POST /scan`, `GET /report/html`, `rtrace
+docstrace`, `rtrace pkgqa`, etc.) also route through `platform_scan()`
+(scoped via the `modules = "<id>"` argument) or call one module's own
+`run_*_scan()` directly when they are intentionally single-module commands
+-- neither rebuilds the orchestration loop above.
 
 ---
 

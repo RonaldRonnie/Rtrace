@@ -86,12 +86,27 @@ platform_scan <- function(root = ".",
   root <- normalizePath(root, mustWork = TRUE)
   all_modules <- list_modules()
 
+  if (length(all_modules) == 0) {
+    rlang::warn(paste(
+      "platform_scan(): no platform modules are registered.",
+      "This usually means RTrace's .onLoad() did not run (e.g. functions",
+      "were sourced individually instead of loading the package).",
+      "The result will contain zero modules and zero diagnostics."
+    ))
+  }
+
   if (!is.null(modules)) {
     unknown <- setdiff(modules, names(all_modules))
     if (length(unknown) > 0) {
       rlang::warn(sprintf("Unknown module id(s) ignored: %s", paste(unknown, collapse = ", ")))
     }
     all_modules <- all_modules[intersect(modules, names(all_modules))]
+    if (length(all_modules) == 0 && length(unknown) < length(modules)) {
+      # All requested ids were valid but resolved to nothing (e.g. `modules`
+      # was a zero-length vector) -- the unknown-id warning above already
+      # covers the "all ids were unknown" case, so don't double-warn.
+      rlang::warn("platform_scan(): the requested `modules` filter matched zero registered modules.")
+    }
   }
 
   results  <- list()

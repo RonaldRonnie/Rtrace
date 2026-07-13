@@ -127,12 +127,9 @@ build_api_router <- function() {
     }
 
     result <- tryCatch({
-      config <- default_config()
-      context <- build_context(root, config, use_cache = use_cache)
-      diags   <- run_rules(context)
-
-      arch_score  <- compute_score(diags)
-      arch_score$module_id <- "rtrace"
+      pr_result  <- platform_scan(root, use_cache = use_cache, modules = "rtrace")
+      diags      <- pr_result$all_diagnostics
+      arch_score <- pr_result$scores[["rtrace"]]
 
       list(
         root       = root,
@@ -201,15 +198,12 @@ build_api_router <- function() {
     }
 
     html <- tryCatch({
-      config  <- default_config()
-      context <- build_context(root, config)
-      diags   <- run_rules(context)
-
-      arch_score  <- compute_score(diags)
-      arch_score$module_id <- "rtrace"
+      config    <- default_config()
+      context   <- build_context(root, config)
+      pr_result <- platform_scan(root, config, modules = "rtrace")
 
       reporter_dashboard(
-        diagnostics  = diags,
+        diagnostics  = pr_result$all_diagnostics,
         layers       = setdiff(unique(context$files$layer), "(unassigned)"),
         layer_graph  = context$dependency_graph$layer_graph,
         title        = sprintf("Trace Platform: %s", basename(root))
