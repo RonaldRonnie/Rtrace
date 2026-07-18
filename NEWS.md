@@ -48,6 +48,19 @@
   opens an HTML report (including the architecture diagram) in the
   Viewer pane. `rstudioapi` added to `Suggests`.
 
+## Bug fixes
+
+* The Trace Platform REST API (`start_api()`/`build_api_router()`, `rtrace
+  api`) had no authentication and no path restriction: any caller could
+  scan or generate an HTML report for an arbitrary filesystem path (e.g.
+  `/etc`), and `start_api()` accepted any `host` including `0.0.0.0` with
+  no way to require a credential. Every endpoint now enforces an optional
+  bearer token (`token=`/`RTRACE_API_TOKEN`, `Authorization: Bearer`) and
+  a mandatory allowlist (`allowed_roots=`/`--allowed-root`, default the
+  working directory) that request `root` paths must resolve within;
+  `start_api()` refuses to bind a non-loopback host unless a token is
+  configured (#4).
+
 ## Documentation
 
 * Architecture Decision Records for ecosystem positioning, core

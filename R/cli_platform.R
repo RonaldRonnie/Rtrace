@@ -210,16 +210,30 @@ cmd_health <- function(options, positional) {
 # ---------------------------------------------------------------------------
 
 #' `rtrace api` command
+#'
+#' `--token` and `--allowed-root` default to the `RTRACE_API_TOKEN` and
+#' `RTRACE_API_ALLOWED_ROOTS` environment variables respectively, so the API
+#' can be configured the same way in a shell and in CI without passing
+#' secrets as CLI arguments. `--allowed-root` accepts a comma-separated list.
+#'
 #' @param options,positional See [parse_cli_args()].
 #' @return Integer exit status.
 #' @keywords internal
 #' @noRd
 cmd_api <- function(options, positional) {
-  host <- options$host %||% "127.0.0.1"
-  port <- as.integer(options$port %||% 8394L)
+  host  <- options$host %||% "127.0.0.1"
+  port  <- as.integer(options$port %||% 8394L)
+  token <- options$token %||% Sys.getenv("RTRACE_API_TOKEN", "")
+
+  allowed_root_opt <- options$`allowed-root` %||% Sys.getenv("RTRACE_API_ALLOWED_ROOTS", "")
+  allowed_roots <- if (nzchar(allowed_root_opt)) {
+    trimws(strsplit(allowed_root_opt, ",", fixed = TRUE)[[1]])
+  } else {
+    getwd()
+  }
 
   tryCatch({
-    start_api(host = host, port = port)
+    start_api(host = host, port = port, token = token, allowed_roots = allowed_roots)
     0L
   }, error = function(e) {
     cat(sprintf("Error starting API: %s\n", conditionMessage(e)))
