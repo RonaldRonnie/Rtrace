@@ -70,7 +70,7 @@ test_that("POST /scan/full returns identical module results to platform_scan()",
   root   <- local_project(c("f.R" = "setwd('/tmp')"))
   direct <- platform_scan(root)
 
-  pr  <- build_api_router()
+  pr  <- build_api_router(allowed_roots = root)
   res <- call_mock_plumber_request(
     pr, "POST", "/scan/full",
     body_raw = charToRaw(jsonlite::toJSON(list(root = root), auto_unbox = TRUE)),
@@ -88,7 +88,7 @@ test_that("POST /scan (single-module) delegates to platform_scan() and matches i
   root   <- local_project(c("f.R" = "setwd('/tmp')"))
   direct <- platform_scan(root, modules = "rtrace")
 
-  pr  <- build_api_router()
+  pr  <- build_api_router(allowed_roots = root)
   res <- call_mock_plumber_request(
     pr, "POST", "/scan",
     body_raw = charToRaw(jsonlite::toJSON(list(root = root), auto_unbox = TRUE)),
@@ -98,4 +98,187 @@ test_that("POST /scan (single-module) delegates to platform_scan() and matches i
 
   expect_equal(body$score$value, direct$scores[["rtrace"]]$score)
   expect_equal(sum(unlist(body$summary)), length(direct$all_diagnostics))
+})
+
+# --- Issue #4: authentication -----------------------------------------------
+
+test_that("requests are rejected without a token when one is configured", {
+  testthat::skip_if_not_installed("plumber")
+
+  root <- local_project(c("f.R" = "x <- 1"))
+  pr   <- build_api_router(token = "s3cr3t", allowed_roots = root)
+
+  res <- call_mock_plumber_request(pr, "GET", "/health")
+
+  expect_equal(res$status, 401L)
+})
+
+test_that("requests are rejected with a wrong token", {
+  testthat::skip_if_not_installed("plumber")
+
+  root <- local_project(c("f.R" = "x <- 1"))
+  pr   <- build_api_router(token = "s3cr3t", allowed_roots = root)
+
+  res <- call_mock_plumber_request(
+    pr, "GET", "/health",
+    headers = list(HTTP_AUTHORIZATION = "Bearer wrong-token")
+  )
+
+  expect_equal(res$status, 401L)
+})
+
+test_that("requests succeed with the correct bearer token", {
+  testthat::skip_if_not_installed("plumber")
+
+  root <- local_project(c("f.R" = "x <- 1"))
+  pr   <- build_api_router(token = "s3cr3t", allowed_roots = root)
+
+  res <- call_mock_plumber_request(
+    pr, "GET", "/health",
+    headers = list(HTTP_AUTHORIZATION = "Bearer s3cr3t")
+  )
+
+  expect_equal(res$status, 200L)
+})
+
+test_that("auth is a no-op when no token is configured", {
+  testthat::skip_if_not_installed("plumber")
+
+  pr  <- build_api_router(token = "", allowed_roots = getwd())
+  res <- call_mock_plumber_request(pr, "GET", "/health")
+
+  expect_equal(res$status, 200L)
+})
+
+test_that("start_api() refuses a non-loopback host without a token", {
+  testthat::skip_if_not_installed("plumber")
+
+  expect_error(
+    start_api(host = "0.0.0.0", token = ""),
+    "Refusing to bind"
+  )
+})
+
+test_that("start_api() does not require a token on loopback hosts", {
+  testthat::skip_if_not_installed("plumber")
+
+  # No error should be raised before the (blocking) router$run() call --
+  # i.e. the loopback exemption from the token requirement is honored. We
+  # can't call $run() in a test, so intercept it via a mocked router.
+  local_mocked_bindings(
+    build_api_router = function(...) {
+      list(run = function(...) invisible(NULL))
+    }
+  )
+
+  expect_no_error(start_api(host = "127.0.0.1", token = ""))
+  expect_no_error(start_api(host = "localhost", token = ""))
+})
+
+# --- Issue #4: path containment ---------------------------------------------
+
+test_that("a root outside allowed_roots is rejected with 403", {
+  testthat::skip_if_not_installed("plumber")
+
+  project_root <- local_project(c("f.R" = "x <- 1"))
+  outside_root <- local_project(c("g.R" = "y <- 2"))  # sibling tempdir, not a descendant
+
+  pr  <- build_api_router(allowed_roots = project_root)
+  res <- call_mock_plumber_request(
+    pr, "POST", "/scan",
+    body_raw = charToRaw(jsonlite::toJSON(list(root = outside_root), auto_unbox = TRUE)),
+    headers  = list(HTTP_CONTENT_TYPE = "application/json")
+  )
+
+  expect_equal(res$status, 403L)
+})
+
+test_that("a path-traversal root ('..') resolving outside allowed_roots is rejected", {
+  testthat::skip_if_not_installed("plumber")
+
+  project_root <- local_project(c("sub/f.R" = "x <- 1"))
+  traversal    <- file.path(project_root, "..")  # escapes to the parent tempdir
+
+  pr  <- build_api_router(allowed_roots = project_root)
+  res <- call_mock_plumber_request(
+    pr, "POST", "/scan",
+    body_raw = charToRaw(jsonlite::toJSON(list(root = traversal), auto_unbox = TRUE)),
+    headers  = list(HTTP_CONTENT_TYPE = "application/json")
+  )
+
+  expect_equal(res$status, 403L)
+})
+
+test_that("a descendant of allowed_roots is accepted", {
+  testthat::skip_if_not_installed("plumber")
+
+  project_root <- local_project(c("sub/f.R" = "x <- 1"))
+  descendant   <- file.path(project_root, "sub")
+
+  pr  <- build_api_router(allowed_roots = project_root)
+  res <- call_mock_plumber_request(
+    pr, "POST", "/scan",
+    body_raw = charToRaw(jsonlite::toJSON(list(root = descendant), auto_unbox = TRUE)),
+    headers  = list(HTTP_CONTENT_TYPE = "application/json")
+  )
+
+  expect_equal(res$status, 200L)
+})
+
+test_that("a nonexistent root is rejected with 400, not 403", {
+  testthat::skip_if_not_installed("plumber")
+
+  project_root <- local_project(c("f.R" = "x <- 1"))
+  missing_root <- file.path(project_root, "does-not-exist")
+
+  pr  <- build_api_router(allowed_roots = project_root)
+  res <- call_mock_plumber_request(
+    pr, "POST", "/scan",
+    body_raw = charToRaw(jsonlite::toJSON(list(root = missing_root), auto_unbox = TRUE)),
+    headers  = list(HTTP_CONTENT_TYPE = "application/json")
+  )
+
+  expect_equal(res$status, 400L)
+})
+
+test_that("GET /report/html enforces path containment on the query-string root", {
+  testthat::skip_if_not_installed("plumber")
+
+  project_root <- local_project(c("f.R" = "x <- 1"))
+  outside_root <- local_project(c("g.R" = "y <- 2"))
+
+  pr  <- build_api_router(allowed_roots = project_root)
+  res <- call_mock_plumber_request(
+    pr, "GET", "/report/html",
+    query = paste0("root=", utils::URLencode(outside_root, reserved = TRUE))
+  )
+
+  expect_equal(res$status, 403L)
+})
+
+# --- secure_compare() / resolve_scan_root() unit tests ----------------------
+
+test_that("secure_compare() matches identical strings and rejects mismatches", {
+  expect_true(secure_compare("abc123", "abc123"))
+  expect_false(secure_compare("abc123", "abc124"))
+  expect_false(secure_compare("abc123", "abc12"))
+  expect_false(secure_compare("abc123", ""))
+  expect_true(secure_compare("", ""))
+})
+
+test_that("resolve_scan_root() reports distinct statuses for missing vs. disallowed paths", {
+  project_root <- local_project(c("f.R" = "x <- 1"))
+
+  ok <- resolve_scan_root(project_root, project_root)
+  expect_true(ok$ok)
+  expect_equal(ok$root, normalizePath(project_root, winslash = "/", mustWork = TRUE))
+
+  missing <- resolve_scan_root(file.path(project_root, "nope"), project_root)
+  expect_false(missing$ok)
+  expect_equal(missing$status, 400L)
+
+  outside_root <- local_project(c("g.R" = "y <- 2"))
+  disallowed <- resolve_scan_root(outside_root, project_root)
+  expect_false(disallowed$ok)
+  expect_equal(disallowed$status, 403L)
 })

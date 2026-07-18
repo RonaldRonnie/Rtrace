@@ -4,7 +4,13 @@
 \alias{start_api}
 \title{Start the Trace Platform REST API server}
 \usage{
-start_api(host = "127.0.0.1", port = 8394L, docs = TRUE)
+start_api(
+  host = "127.0.0.1",
+  port = 8394L,
+  docs = TRUE,
+  token = Sys.getenv("RTRACE_API_TOKEN", ""),
+  allowed_roots = getwd()
+)
 }
 \arguments{
 \item{host}{Character scalar. Interface to listen on. Default \code{"127.0.0.1"}.}
@@ -12,6 +18,15 @@ start_api(host = "127.0.0.1", port = 8394L, docs = TRUE)
 \item{port}{Integer. Port number. Default \code{8394}.}
 
 \item{docs}{Logical. If \code{TRUE} (default), mounts the Swagger UI at \code{/}.}
+
+\item{token}{Character scalar. Bearer token required on every request
+(\verb{Authorization: Bearer <token>}). Defaults to the \code{RTRACE_API_TOKEN}
+environment variable. If empty, the API is unauthenticated and \code{host}
+must be a loopback address.}
+
+\item{allowed_roots}{Character vector of directories that \code{root} request
+parameters are allowed to resolve within. Default: the working
+directory the server was started in.}
 }
 \value{
 Invisibly, the \code{plumber} router object (so callers can modify it

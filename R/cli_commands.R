@@ -381,6 +381,10 @@ rtrace_help_text <- function() {
     "  api                      Start the REST API server",
     "                              --host <host>  (default: 127.0.0.1)",
     "                              --port <port>  (default: 8394)",
+    "                              --token <token>  bearer token (default: $RTRACE_API_TOKEN)",
+    "                                required to bind to a non-loopback host",
+    "                              --allowed-root <dir,...>  comma-separated allowlist",
+    "                                (default: $RTRACE_API_ALLOWED_ROOTS, else cwd)",
     "",
     sep = "\n"
   )

@@ -4,12 +4,20 @@
 \alias{api_curl_examples}
 \title{Generate a \code{curl} example for the Trace Platform API}
 \usage{
-api_curl_examples(host = "127.0.0.1", port = 8394L)
+api_curl_examples(
+  host = "127.0.0.1",
+  port = 8394L,
+  token = Sys.getenv("RTRACE_API_TOKEN", "")
+)
 }
 \arguments{
 \item{host}{Character scalar. Default \code{"127.0.0.1"}.}
 
 \item{port}{Integer. Default \code{8394L}.}
+
+\item{token}{Character scalar. If non-empty, examples include the
+\code{Authorization: Bearer} header. Default: the \code{RTRACE_API_TOKEN}
+environment variable.}
 }
 \value{
 Invisibly, a character vector of curl commands.

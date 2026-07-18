@@ -13,6 +13,26 @@ frontends.
 \details{
 If \code{plumber} is not installed, all functions in this file emit an
 informative error rather than failing silently.
+\subsection{Authentication}{
+
+Every endpoint requires a bearer token when one is configured (via the
+\code{token} argument or the \code{RTRACE_API_TOKEN} environment variable):
+\verb{Authorization: Bearer <token>}. If no token is configured, \code{\link[=start_api]{start_api()}}
+refuses to bind to any host other than loopback (\verb{127.0.0.1},
+\code{localhost}, \verb{::1}) -- an unauthenticated API may only ever be reachable
+from the local machine.
+}
+
+\subsection{Path containment}{
+
+\code{root} (request body for \verb{/scan} and \verb{/scan/full}, query string for
+\verb{/report/html}) must resolve to one of \code{allowed_roots} (the server's
+configured project directories, default: the working directory the
+server was started in) or a descendant of one. This applies regardless
+of authentication -- it also blocks path traversal (\code{..}) from a
+request that is otherwise authenticated.
+}
+
 \subsection{Endpoints}{\tabular{lll}{
    Method \tab Path \tab Description \cr
    GET \tab /health \tab Platform health and version \cr
