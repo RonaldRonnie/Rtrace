@@ -63,6 +63,30 @@ frontends.</p>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>If <code>plumber</code> is not installed, all functions in this file emit an
 informative error rather than failing silently.</p><div class="section">
+<h3 id="authentication">Authentication<a class="anchor" aria-label="anchor" href="#authentication"></a></h3>
+
+
+<p>Every endpoint requires a bearer token when one is configured (via the
+<code>token</code> argument or the <code>RTRACE_API_TOKEN</code> environment variable):
+<code>Authorization: Bearer &lt;token&gt;</code>. If no token is configured, <code><a href="start_api.html">start_api()</a></code>
+refuses to bind to any host other than loopback (<code>127.0.0.1</code>,
+<code>localhost</code>, <code>::1</code>) – an unauthenticated API may only ever be reachable
+from the local machine.</p>
+</div>
+
+<div class="section">
+<h3 id="path-containment">Path containment<a class="anchor" aria-label="anchor" href="#path-containment"></a></h3>
+
+
+<p><code>root</code> (request body for <code>/scan</code> and <code>/scan/full</code>, query string for
+<code>/report/html</code>) must resolve to one of <code>allowed_roots</code> (the server's
+configured project directories, default: the working directory the
+server was started in) or a descendant of one. This applies regardless
+of authentication – it also blocks path traversal (<code>..</code>) from a
+request that is otherwise authenticated.</p>
+</div>
+
+<div class="section">
 <h3 id="endpoints">Endpoints<a class="anchor" aria-label="anchor" href="#endpoints"></a></h3>
 <table class="table table"><tr><td>Method</td><td>Path</td><td>Description</td></tr><tr><td>GET</td><td>/health</td><td>Platform health and version</td></tr><tr><td>POST</td><td>/scan</td><td>Run a full platform scan</td></tr><tr><td>GET</td><td>/rules</td><td>List all registered rules</td></tr><tr><td>GET</td><td>/modules</td><td>List registered platform modules</td></tr><tr><td>GET</td><td>/score</td><td>Compute score for a previously scanned project</td></tr><tr><td>GET</td><td>/report/html</td><td>Generate an HTML dashboard report</td></tr></table></div>
 

@@ -70,6 +70,10 @@
 <li>RStudio Addin (“RTrace: Scan Project”): scans the active project and opens an HTML report (including the architecture diagram) in the Viewer pane. <code>rstudioapi</code> added to <code>Suggests</code>.</li>
 </ul></div>
 <div class="section level3">
+<h3 id="bug-fixes-0-1-0-9000">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-1-0-9000"></a></h3>
+<ul><li>The Trace Platform REST API (<code><a href="../reference/start_api.html">start_api()</a></code>/<code><a href="../reference/build_api_router.html">build_api_router()</a></code>, <code>rtrace api</code>) had no authentication and no path restriction: any caller could scan or generate an HTML report for an arbitrary filesystem path (e.g. <code>/etc</code>), and <code><a href="../reference/start_api.html">start_api()</a></code> accepted any <code>host</code> including <code>0.0.0.0</code> with no way to require a credential. Every endpoint now enforces an optional bearer token (<code>token=</code>/<code>RTRACE_API_TOKEN</code>, <code>Authorization: Bearer</code>) and a mandatory allowlist (<code>allowed_roots=</code>/<code>--allowed-root</code>, default the working directory) that request <code>root</code> paths must resolve within; <code><a href="../reference/start_api.html">start_api()</a></code> refuses to bind a non-loopback host unless a token is configured (<a href="https://github.com/RonaldRonnie/Rtrace/issues/4" class="external-link">#4</a>).</li>
+</ul></div>
+<div class="section level3">
 <h3 id="documentation-0-1-0-9000">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-1-0-9000"></a></h3>
 <ul><li>Architecture Decision Records for ecosystem positioning, core architecture, and incremental AST caching.</li>
 <li>Quick start, configuration reference, rule authoring guide, and CLI reference.</li>

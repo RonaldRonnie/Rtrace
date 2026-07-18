@@ -6,7 +6,11 @@ documentation.
 ## Usage
 
 ``` r
-api_curl_examples(host = "127.0.0.1", port = 8394L)
+api_curl_examples(
+  host = "127.0.0.1",
+  port = 8394L,
+  token = Sys.getenv("RTRACE_API_TOKEN", "")
+)
 ```
 
 ## Arguments
@@ -18,6 +22,12 @@ api_curl_examples(host = "127.0.0.1", port = 8394L)
 - port:
 
   Integer. Default `8394L`.
+
+- token:
+
+  Character scalar. If non-empty, examples include the
+  `Authorization: Bearer` header. Default: the `RTRACE_API_TOKEN`
+  environment variable.
 
 ## Value
 
