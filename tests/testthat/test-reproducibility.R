@@ -64,6 +64,46 @@ test_that("reproducibility.externalDownload fires for download.file calls", {
   expect_true("reproducibility.externalDownload" %in% diag_ids)
 })
 
+# Regression test for Issue #11: rtrace.yml previously had no supported way
+# to disable a single reproducibility rule -- run_reproducibility_scan()
+# ignored config$rules entirely and always ran every rule at its hardcoded
+# default severity/params.
+test_that("run_reproducibility_scan() honors an enabled: false override from config", {
+  root <- local_project(list(
+    "R/get_data.R" = paste(
+      "url <- 'https://example.com/data.csv'",
+      "download.file(url, 'data/raw.csv')",
+      sep = "\n"
+    )
+  ))
+
+  config <- parse_config(list(rules = list(
+    list(type = "reproducibility.externalDownload", enabled = FALSE)
+  )))
+  expect_true(validate_config(config))
+
+  result <- run_reproducibility_scan(root, config)
+  diag_ids <- vapply(result$diagnostics$diagnostics, function(d) d$rule_id, character(1))
+  expect_false("reproducibility.externalDownload" %in% diag_ids)
+})
+
+# Regression test for Issue #7: readLines() is a local-file reader, not a
+# network download function, and must not trigger externalDownload.
+test_that("reproducibility.externalDownload does not fire for readLines calls", {
+  root <- local_project(list(
+    "R/read_data.R" = paste(
+      "read_local_file <- function(path) {",
+      "  lines <- readLines(path)",
+      "  paste(lines, collapse = '\\n')",
+      "}",
+      sep = "\n"
+    )
+  ))
+  result <- run_reproducibility_scan(root)
+  diag_ids <- vapply(result$diagnostics$diagnostics, function(d) d$rule_id, character(1))
+  expect_false("reproducibility.externalDownload" %in% diag_ids)
+})
+
 test_that("reproducibility.portablePaths fires for bare filenames without path separators", {
   # Rule flags bare filenames (no / separator) passed to I/O functions — they
   # depend on the current working directory and break on other machines.

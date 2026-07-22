@@ -16,7 +16,7 @@
 #' omitted when the diagnostic has none. Built with
 #' [`xml2`](https://xml2.r-lib.org/), which handles attribute/text escaping,
 #' so this reporter requires the `xml2` package (`Suggests`, not a hard
-#' dependency — see [ADR 0002](https://github.com/rtrace-dev/rtrace/blob/main/dev/adr/0002-core-architecture.md)
+#' dependency — see [ADR 0002](https://github.com/RonaldRonnie/Rtrace/blob/main/dev/adr/0002-core-architecture.md)
 #' on keeping the core dependency footprint light).
 #'
 #' @param diagnostics An `rtrace_diagnostic_set`.

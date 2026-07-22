@@ -56,6 +56,54 @@ test_that("datatrace.readError fires for a broken CSV", {
   expect_equal(result$score$module_id, "datatrace")
 })
 
+# Regression test for Issue #11: run_datatrace_scan() previously ignored
+# config entirely, so a single noisy datatrace rule couldn't be disabled via
+# rtrace.yml. Also guards against a blanket severity override collapsing
+# rules (like datatrace.jsonDataset) that legitimately emit diagnostics at
+# more than one severity when no override is configured for them.
+test_that("run_datatrace_scan() honors an enabled: false override from config", {
+  root <- local_project(list("R/analysis.R" = "1 + 1"))
+  dir.create(file.path(root, "data"))
+
+  # Sanity check: the rule fires by default (empty data/ dir, no CSVs).
+  default_result <- run_datatrace_scan(root)
+  default_ids <- vapply(default_result$diagnostics$diagnostics, function(d) d$rule_id, character(1))
+  expect_true("datatrace.noDataFiles" %in% default_ids)
+
+  config <- parse_config(list(rules = list(
+    list(type = "datatrace.noDataFiles", enabled = FALSE)
+  )))
+  expect_true(validate_config(config))
+
+  result <- run_datatrace_scan(root, config)
+  diag_ids <- vapply(result$diagnostics$diagnostics, function(d) d$rule_id, character(1))
+  expect_false("datatrace.noDataFiles" %in% diag_ids)
+})
+
+# Regression test for Issue #8: a CSV with no trailing newline triggers
+# base R's benign "incomplete final line" warning, which used to be treated
+# as a hard read failure (datatrace.readError) plus a spurious
+# datatrace.encodingIssue diagnostic.
+test_that("datatrace.readError and datatrace.encodingIssue do not fire for a CSV missing a trailing newline", {
+  root <- local_project(list("R/analysis.R" = "1 + 1"))
+  no_newline_path <- file.path(root, "data", "sample.csv")
+  dir.create(dirname(no_newline_path), recursive = TRUE, showWarnings = FALSE)
+  con <- file(no_newline_path, "wb")
+  writeChar("a,b,c\n1,2,3\n4,5,6", con, eos = NULL)
+  close(con)
+
+  result <- run_datatrace_scan(root)
+  diag_ids <- vapply(result$diagnostics$diagnostics, function(d) d$rule_id, character(1))
+
+  expect_false("datatrace.readError" %in% diag_ids)
+  expect_false("datatrace.encodingIssue" %in% diag_ids)
+
+  scanned <- scan_data_files(root)
+  row <- scanned[scanned$rel_path == "data/sample.csv", ]
+  expect_true(is.na(row$read_error) || nchar(row$read_error) == 0)
+  expect_true(isTRUE(row$encoding_ok))
+})
+
 test_that("datatrace.missingHeader fires when header is absent", {
   # Create file that looks like it has no header (numeric first row)
   root <- local_project(list("data/raw.csv" = "1,2,3\n4,5,6\n7,8,9"))

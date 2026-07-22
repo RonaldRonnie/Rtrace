@@ -14,7 +14,7 @@ Invisibly, the rule id.
 }
 \description{
 Built-in rules call this at package load time. Third-party packages may
-call the exported \code{rtrace::register_rule()} from their own \code{.onLoad()}
+call the exported \code{RTrace::register_rule()} from their own \code{.onLoad()}
 to add rules without forking RTrace (see ADR 0002's plugin-system
 section).
 }

@@ -2,25 +2,25 @@
 
 ## Supported Versions
 
-RTrace is pre-1.0. Security fixes are applied to the latest released minor
-version and to the development branch (`main`). There is no long-term
-support branch until 1.0.0 ships.
+RTrace 1.0.0 is the first stable release. Security fixes are applied to
+the latest released minor version and to the development branch (`main`).
+There is no long-term support branch for releases prior to 1.0.0.
 
 | Version | Supported |
 |---|---|
-| latest release | yes |
+| >= 1.0.0 (latest release) | yes |
 | development (`main`) | yes |
-| older releases | no |
+| < 1.0.0 | no |
 
 ## Reporting a Vulnerability
 
 Please **do not** open a public GitHub issue for security vulnerabilities.
 
-Instead, email `security@rtrace.dev` with:
+Instead, email `ronald2ouma2@gmail.com` with:
 
 * a description of the issue and its potential impact,
 * steps to reproduce (a minimal R project/config that triggers it),
-* the RTrace version (`rtrace::rtrace_version()`) and R version
+* the RTrace version (`utils::packageVersion("RTrace")`) and R version
   (`R.version.string`) you tested against.
 
 You should receive an acknowledgment within 5 business days. We will work

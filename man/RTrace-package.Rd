@@ -11,17 +11,17 @@ The Trace Platform is a comprehensive software quality and architecture governan
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/rtrace-dev/rtrace}
-  \item Report bugs at \url{https://github.com/rtrace-dev/rtrace/issues}
+  \item \url{https://github.com/RonaldRonnie/Rtrace}
+  \item Report bugs at \url{https://github.com/RonaldRonnie/Rtrace/issues}
 }
 
 }
 \author{
-\strong{Maintainer}: RTrace Contributors \email{maintainers@rtrace.dev}
+\strong{Maintainer}: RTrace Contributors \email{ronald2ouma2@gmail.com}
 
 Authors:
 \itemize{
-  \item RTrace Contributors \email{maintainers@rtrace.dev}
+  \item RTrace Contributors \email{ronald2ouma2@gmail.com}
 }
 
 }

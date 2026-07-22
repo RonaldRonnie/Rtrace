@@ -4,14 +4,22 @@
 \alias{discover_plugins}
 \title{Discover and load installed RTrace plugin packages}
 \usage{
-discover_plugins(lib_paths = .libPaths(), verbose = FALSE)
+discover_plugins(
+  lib_paths = .libPaths(),
+  allowlist = plugin_allowlist(),
+  verbose = FALSE
+)
 }
 \arguments{
 \item{lib_paths}{Character vector of library paths to scan. Defaults to
 \code{\link[=.libPaths]{.libPaths()}}.}
 
-\item{verbose}{Logical; if \code{TRUE}, prints a line for each plugin found or
-skipped. Default \code{FALSE}.}
+\item{allowlist}{Character vector of package names permitted to be
+loaded. Defaults to \code{\link[=plugin_allowlist]{plugin_allowlist()}}. A self-declared plugin
+package not in this vector is skipped.}
+
+\item{verbose}{Logical; if \code{TRUE}, prints a line for each plugin found,
+loaded, or skipped. Default \code{FALSE}.}
 }
 \value{
 Invisibly, a character vector of plugin package names that were
@@ -19,9 +27,13 @@ loaded.
 }
 \description{
 Scans every installed package in \code{\link[=.libPaths]{.libPaths()}} for the
-\code{Config/rtrace/plugin} DESCRIPTION field. Any package with this field set
-to \code{"true"} (case-insensitive) is loaded with \code{\link[=requireNamespace]{requireNamespace()}}, which
-triggers the package's \code{.onLoad()} to self-register its rules.
+\code{Config/rtrace/plugin} DESCRIPTION field. A package with this field set
+to \code{"true"} (case-insensitive) is only loaded with \code{\link[=requireNamespace]{requireNamespace()}}
+(which triggers the package's \code{.onLoad()} to self-register its rules) if
+it also appears in \code{allowlist} -- self-declaration in DESCRIPTION is not,
+by itself, treated as authorization to run the package's code (Issue
+#13). Packages found but not allowlisted are reported via \code{verbose}
+messages, not loaded.
 }
 \details{
 Safe to call multiple times — already-registered rules are not

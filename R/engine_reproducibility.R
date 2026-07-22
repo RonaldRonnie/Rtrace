@@ -37,10 +37,22 @@ run_reproducibility_scan <- function(root = ".",
   diags <- new_diagnostic_set()
 
   for (rule in repro_rules) {
-    spec <- list(type = rule$id, enabled = TRUE,
-                 severity = NA_character_, params = list())
-    severity <- rule$default_severity
-    params   <- rule$default_params
+    spec <- find_rule_spec(config, rule$id)
+    if (!is.null(spec) && !isTRUE(spec$enabled)) next
+
+    # Only override severity when the user has explicitly configured one for
+    # this rule -- a blanket override would collapse rules that legitimately
+    # emit diagnostics at more than one severity.
+    override_severity <- if (!is.null(spec) && !is.na(spec$severity %||% NA_character_)) {
+      spec$severity
+    } else {
+      NULL
+    }
+    params <- if (!is.null(spec)) {
+      utils::modifyList(rule$default_params, spec$params %||% list())
+    } else {
+      rule$default_params
+    }
 
     result <- tryCatch(
       rule$check(context, params),
@@ -55,7 +67,9 @@ run_reproducibility_scan <- function(root = ".",
 
     if (length(result) > 0) {
       if (inherits(result, "rtrace_diagnostic")) result <- list(result)
-      result <- lapply(result, function(d) { d$severity <- severity; d })
+      if (!is.null(override_severity)) {
+        result <- lapply(result, function(d) { d$severity <- override_severity; d })
+      }
       diags  <- c(diags, new_diagnostic_set(result))
     }
   }

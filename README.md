@@ -1,8 +1,8 @@
 # RTrace
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/rtrace-dev/rtrace/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/rtrace-dev/rtrace/actions/workflows/R-CMD-check.yml)
-[![Codecov test coverage](https://app.codecov.io/gh/rtrace-dev/rtrace/branch/main/graph/badge.svg)](https://app.codecov.io/gh/rtrace-dev/rtrace)
+[![R-CMD-check](https://github.com/RonaldRonnie/Rtrace/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/RonaldRonnie/Rtrace/actions/workflows/R-CMD-check.yml)
+[![Codecov test coverage](https://app.codecov.io/gh/RonaldRonnie/Rtrace/branch/main/graph/badge.svg)](https://app.codecov.io/gh/RonaldRonnie/Rtrace)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
@@ -25,7 +25,7 @@ RTrace is not yet on CRAN. Install the development version:
 
 ```r
 # install.packages("pak")
-pak::pak("rtrace-dev/rtrace")
+pak::pak("RonaldRonnie/Rtrace")
 ```
 
 ## Quick start
@@ -107,13 +107,16 @@ architecture-overview diagram — in the Viewer pane.
 
 ## Status
 
-RTrace is pre-1.0 and under active development. The core engine, rule
-engine, CLI (10 commands, including `doctor` and `benchmark`), an RStudio
-Addin, all seven reporters (console/JSON/Markdown/SARIF/HTML — with an
-inline SVG architecture diagram — CSV/XML), an opt-in AST parse cache for
-incremental scanning, and 16 built-in rules are implemented and tested;
-see [dev/roadmap.md](dev/roadmap.md) for what is shipped versus planned (a
-per-rule diagnostic cache, plugin discovery, a VS Code extension).
+RTrace shipped its first stable release, 1.0.0, and is under active
+development on top of it (`main` is currently at 1.0.0.9000). Beyond the
+0.1.0-era core engine (16 built-in rules, rule engine, 10 CLI commands,
+an RStudio Addin, seven reporters, an opt-in AST parse cache), the Trace
+Platform layer adds four domain modules (Reproducibility, DataTrace,
+DocsTrace, PackageQA — 37 rules total), a unified scoring system, an
+optional REST API, seven more CLI commands, and an allowlist-gated plugin
+discovery system. See [NEWS.md](NEWS.md) for the full changelog and
+[dev/roadmap.md](dev/roadmap.md) for what's planned next (a per-rule
+diagnostic cache, a VS Code extension).
 
 ## Contributing
 

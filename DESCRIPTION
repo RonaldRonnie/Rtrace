@@ -1,8 +1,8 @@
 Package: RTrace
 Title: Trace Platform — Architecture Governance and Quality Analysis for R
-Version: 0.2.0.9000
+Version: 1.0.0.9000
 Authors@R: c(
-    person("RTrace", "Contributors", , "maintainers@rtrace.dev", role = c("aut", "cre"))
+    person("RTrace", "Contributors", , "ronald2ouma2@gmail.com", role = c("aut", "cre"))
     )
 Description: The Trace Platform is a comprehensive software quality and
     architecture governance system for R projects and packages. RTrace is

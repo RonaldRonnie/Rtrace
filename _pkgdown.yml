@@ -19,20 +19,20 @@ navbar:
       text: Guides
       menu:
         - text: Quick Start
-          href: https://github.com/rtrace-dev/rtrace/blob/main/dev/quick-start.md
+          href: https://github.com/RonaldRonnie/Rtrace/blob/main/dev/quick-start.md
         - text: Configuration Reference
-          href: https://github.com/rtrace-dev/rtrace/blob/main/dev/configuration-reference.md
+          href: https://github.com/RonaldRonnie/Rtrace/blob/main/dev/configuration-reference.md
         - text: Rules Reference
-          href: https://github.com/rtrace-dev/rtrace/blob/main/dev/rules-reference.md
+          href: https://github.com/RonaldRonnie/Rtrace/blob/main/dev/rules-reference.md
         - text: Rule Authoring Guide
-          href: https://github.com/rtrace-dev/rtrace/blob/main/dev/rule-authoring-guide.md
+          href: https://github.com/RonaldRonnie/Rtrace/blob/main/dev/rule-authoring-guide.md
         - text: CLI Reference
-          href: https://github.com/rtrace-dev/rtrace/blob/main/dev/cli-reference.md
+          href: https://github.com/RonaldRonnie/Rtrace/blob/main/dev/cli-reference.md
         - text: -------
         - text: Architecture Decision Records
-          href: https://github.com/rtrace-dev/rtrace/tree/main/dev/adr
+          href: https://github.com/RonaldRonnie/Rtrace/tree/main/dev/adr
         - text: Roadmap
-          href: https://github.com/rtrace-dev/rtrace/blob/main/dev/roadmap.md
+          href: https://github.com/RonaldRonnie/Rtrace/blob/main/dev/roadmap.md
 
 reference:
 - title: Scanning

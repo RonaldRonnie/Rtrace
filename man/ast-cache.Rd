@@ -12,7 +12,7 @@ are always recomputed for the full project on every scan, because most
 built-in rules read cross-file state (the dependency graph, all test
 files for \code{testing.missingTests}, etc.) and a stale per-file diagnostic
 cache could silently miss a violation introduced by a \emph{different} file
-changing. See \href{https://github.com/rtrace-dev/rtrace/blob/main/dev/roadmap.md}{dev/roadmap.md}
+changing. See \href{https://github.com/RonaldRonnie/Rtrace/blob/main/dev/roadmap.md}{dev/roadmap.md}
 for the rule-scope model a future per-rule diagnostic cache would need.
 }
 \details{

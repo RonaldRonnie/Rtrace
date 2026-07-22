@@ -191,7 +191,7 @@ rule_reproducibility_temp_files <- function() {
 #' @keywords internal
 #' @noRd
 rule_reproducibility_external_download <- function() {
-  download_fns <- c("download.file", "url", "readLines")
+  download_fns <- c("download.file", "url")
 
   Rule$new(
     id = "reproducibility.externalDownload",

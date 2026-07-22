@@ -129,7 +129,7 @@ every module be unit-tested in isolation with synthetic inputs.
   rules never re-walk the filesystem or re-parse files themselves.
 - Built-in rules self-register into a package-level `rule_registry`
   environment at package load time via `register_rule()`. Third-party
-  packages can call the exported `rtrace::register_rule()` in their own
+  packages can call the exported `RTrace::register_rule()` in their own
   `.onLoad()` to add rules without forking RTrace — this is the plugin
   mechanism for 0.1.0 (a discovery mechanism that scans installed packages
   for an `rtrace.plugins` convention is the natural 0.2 extension, recorded
@@ -167,8 +167,8 @@ every module be unit-tested in isolation with synthetic inputs.
 ### CLI (`R/cli_commands.R`, `inst/rtrace`)
 
 - A single executable shell wrapper (`inst/rtrace`, installed onto `PATH`
-  via `Rscript -e 'cat(system.file("rtrace", package = "rtrace"))'` or run
-  directly with `Rscript -e 'rtrace::rtrace_cli()'`) dispatches to one
+  via `Rscript -e 'cat(system.file("rtrace", package = "RTrace"))'` or run
+  directly with `Rscript -e 'RTrace::rtrace_cli()'`) dispatches to one
   function per subcommand (`cmd_scan`, `cmd_init`, `cmd_validate`,
   `cmd_list_rules`, `cmd_describe_rule`, `cmd_config`, `cmd_doctor`,
   `cmd_version`, `cmd_help`). No CLI-parsing dependency is introduced; argument parsing is

@@ -65,3 +65,25 @@ test_that("known_rule_types reflects the registered rules", {
   expect_true("antipattern.setwd" %in% known_rule_types())
   expect_true("complexity.cyclomatic" %in% known_rule_types())
 })
+
+# Regression test for Issue #11: domain-specific rules (reproducibility.*,
+# datatrace.*, docstrace.*, packageqa.*) were excluded from
+# known_rule_types(), so referencing one in rtrace.yml was a hard
+# validate_config() error even though the domain engines run every
+# registered rule of their prefix and treat a config entry as an opt-out
+# override.
+test_that("known_rule_types includes domain-specific rule types", {
+  types <- known_rule_types()
+  expect_true("reproducibility.externalDownload" %in% types)
+  expect_true("datatrace.readError" %in% types)
+  expect_true("docstrace.examplesQuality" %in% types)
+  expect_true("packageqa.testCoverage" %in% types)
+})
+
+test_that("validate_config accepts a domain-specific rule type", {
+  config <- new_config(rules = list(
+    list(type = "reproducibility.externalDownload", enabled = FALSE,
+         severity = NA, params = list())
+  ))
+  expect_true(validate_config(config))
+})

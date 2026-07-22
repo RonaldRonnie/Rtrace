@@ -16,7 +16,7 @@ NULL
 rtrace_env <- new.env(parent = emptyenv())
 rtrace_env$rule_registry             <- list()
 rtrace_env$platform_modules          <- list()
-rtrace_env$platform_version          <- "0.2.0.dev"
+rtrace_env$platform_version          <- "1.0.0.9000"  # overwritten in .onLoad() with the installed package version
 rtrace_env$platform_name             <- "Trace Platform"
 rtrace_env$recommendation_providers  <- list()
 rtrace_env$active_provider           <- "builtin"

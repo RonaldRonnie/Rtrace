@@ -13,10 +13,14 @@ NULL
 #' Run the Package QA engine against a project
 #'
 #' @param root Character scalar project root.
+#' @param config An `rtrace_config` object. Defaults to [default_config()].
+#'   Every registered `packageqa.*` rule runs by default; a `config$rules`
+#'   entry for a rule's id overrides its `enabled`/`severity`/`params`
+#'   (Issue #11).
 #' @return A list with `is_package` (logical), `diagnostics` (an
 #'   `rtrace_diagnostic_set`), and `score` (a `trace_score`).
 #' @export
-run_packageqa_scan <- function(root = ".") {
+run_packageqa_scan <- function(root = ".", config = default_config()) {
   root       <- normalizePath(root, mustWork = TRUE)
   is_package <- file.exists(file.path(root, "DESCRIPTION"))
 
@@ -28,8 +32,22 @@ run_packageqa_scan <- function(root = ".") {
   diags <- new_diagnostic_set()
 
   for (rule in packageqa_rules) {
+    spec <- find_rule_spec(config, rule$id)
+    if (!is.null(spec) && !isTRUE(spec$enabled)) next
+
+    override_severity <- if (!is.null(spec) && !is.na(spec$severity %||% NA_character_)) {
+      spec$severity
+    } else {
+      NULL
+    }
+    params <- if (!is.null(spec)) {
+      utils::modifyList(rule$default_params, spec$params %||% list())
+    } else {
+      rule$default_params
+    }
+
     result <- tryCatch(
-      rule$domain_fns$check_packageqa(root),
+      rule$domain_fns$check_packageqa(root, params),
       error = function(e) {
         list(new_diagnostic(
           rule_id = "rule-error", severity = "error", file = "(packageqa-engine)",
@@ -39,6 +57,9 @@ run_packageqa_scan <- function(root = ".") {
     )
     if (length(result) > 0) {
       if (inherits(result, "rtrace_diagnostic")) result <- list(result)
+      if (!is.null(override_severity)) {
+        result <- lapply(result, function(d) { d$severity <- override_severity; d })
+      }
       diags <- c(diags, new_diagnostic_set(result))
     }
   }

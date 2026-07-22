@@ -28,7 +28,7 @@ session built it to a state where:
 The package is genuinely usable today for R projects that need architecture
 enforcement, dependency-direction governance, anti-pattern detection, and
 reproducibility checks. It is not yet CRAN-ready in the sense of having a
-real GitHub remote (all `github.com/rtrace-dev/rtrace` URLs are
+real GitHub remote (all `github.com/RonaldRonnie/Rtrace` URLs are
 placeholders; the repo has not been created), but the code, tests, and
 documentation are in a state appropriate for a public pre-release on GitHub.
 
@@ -204,7 +204,7 @@ Duration: 14–18 s
 ```
 
 The `--as-cran` (CRAN submission mode) check adds one NOTE about the
-GitHub URLs referenced in README badges and DESCRIPTION (`rtrace-dev/rtrace`
+GitHub URLs referenced in README badges and DESCRIPTION (`RonaldRonnie/Rtrace`
 does not exist yet — it's a placeholder org). This NOTE will resolve once
 the repository is published on GitHub. Everything else passes cleanly.
 
@@ -353,7 +353,7 @@ should eventually be refactored for measurement ergonomics.
 See [dev/roadmap.md](roadmap.md) for the complete, versioned roadmap.
 Highest-priority remaining items by value/risk:
 
-1. Create a real GitHub remote at `rtrace-dev/rtrace` (all workflows and
+1. Create a real GitHub remote at `RonaldRonnie/Rtrace` (all workflows and
    pkgdown CI are ready to wire up; this is the immediate next step for
    publication).
 2. Write a `vignette("rtrace")` so pkgdown Articles tab is populated

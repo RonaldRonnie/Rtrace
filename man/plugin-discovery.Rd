@@ -5,12 +5,17 @@
 \title{Plugin Discovery System}
 \description{
 Automatic plugin discovery was deferred from the 0.1.0 release (noted in
-ADR 0002 and the roadmap). This module implements it: at package load time
-(and on-demand via \code{\link[=discover_plugins]{discover_plugins()}}) the discovery system scans every
+ADR 0002 and the roadmap). This module implements it, on demand via
+\code{\link[=discover_plugins]{discover_plugins()}} -- it is \strong{not} run automatically at package load
+time (\code{.onLoad()} never calls it): the discovery system scans every
 installed package for a \code{Config/rtrace/plugin} field in its DESCRIPTION
-file. When found, it calls \code{requireNamespace()} on that package, which
-triggers the package's own \code{.onLoad()} to self-register its rules via the
-existing \code{rtrace::register_rule()} hook.
+file. A package merely setting that field is not sufficient to get its
+code run, though -- \code{\link[=discover_plugins]{discover_plugins()}} only calls \code{requireNamespace()}
+(which triggers the package's own \code{.onLoad()} to self-register its rules
+via \code{RTrace::register_rule()}) for packages the caller has explicitly
+allowlisted via \code{\link[=plugin_allowlist]{plugin_allowlist()}}. Self-declaration alone is treated as
+untrusted, since any locally installed package could otherwise get
+arbitrary code executed just by adding one DESCRIPTION field.
 }
 \details{
 The same field name convention also applies to platform modules: a package

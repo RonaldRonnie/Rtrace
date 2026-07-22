@@ -156,13 +156,17 @@ aggregate_scores <- function(scores, weights = NULL) {
     weights <- stats::setNames(rep(1.0, length(ids)), ids)
   }
 
-  total_weight <- sum(weights[ids], na.rm = TRUE)
+  effective_weights <- stats::setNames(
+    vapply(ids, function(id) if (id %in% names(weights)) weights[[id]] else 1.0, numeric(1)),
+    ids
+  )
+
+  total_weight <- sum(effective_weights)
   if (total_weight == 0) total_weight <- 1.0
 
   weighted_sum <- sum(vapply(ids, function(id) {
     sc <- scores[[id]]
-    w  <- weights[[id]] %||% 1.0
-    (sc$score %||% 0L) * w
+    (sc$score %||% 0L) * effective_weights[[id]]
   }, numeric(1)))
 
   aggregate_score <- as.integer(round(weighted_sum / total_weight))
@@ -172,7 +176,7 @@ aggregate_scores <- function(scores, weights = NULL) {
     score     = aggregate_score,
     breakdown = list(
       module_scores = lapply(scores, function(s) list(score = s$score, label = s$label)),
-      weights       = weights[ids]
+      weights       = effective_weights
     ),
     module_id = "platform"
   )

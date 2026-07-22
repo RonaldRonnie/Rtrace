@@ -175,6 +175,10 @@ rule_packageqa_test_coverage <- function() {
 
       test_files <- list.files(tests_dir, pattern = "^test.*\\.[Rr]$",
                                 recursive = TRUE, full.names = FALSE)
+      # usethis::use_testthat() generates tests/testthat.R -- a boilerplate
+      # runner stub containing only test_check(); its mere presence must
+      # not count as having a real test suite (Issue #9).
+      test_files <- test_files[!basename(test_files) %in% c("testthat.R", "testthat.r")]
       min_files  <- params$min_test_files %||% 1L
 
       if (length(test_files) < min_files) {

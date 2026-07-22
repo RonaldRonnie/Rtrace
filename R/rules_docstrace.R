@@ -7,6 +7,42 @@
 #' @name docstrace-rules
 NULL
 
+#' Extract the content of a brace-delimited Rd macro, honoring nesting
+#'
+#' Finds the first `\tag{...}` in `content` and returns everything between
+#' its opening and matching closing brace, correctly skipping over any
+#' nested `{...}` groups (e.g. `\dontrun{}`, `\code{}` inside `\examples{}`).
+#' A single-`[^}]*`-style regex cannot do this: it stops at the *first*
+#' closing brace it sees, truncating the match as soon as any nested group
+#' appears.
+#'
+#' @param content Character scalar, the full Rd file text.
+#' @param tag Character scalar, the macro name without the leading backslash
+#'   (e.g. `"examples"`).
+#' @return Character scalar with the block's inner content, or `NA` if the
+#'   tag is absent or its braces are unbalanced.
+#' @keywords internal
+#' @noRd
+extract_braced_block <- function(content, tag) {
+  start <- regexpr(paste0("\\\\", tag, "\\{"), content)
+  if (start[1] == -1) return(NA_character_)
+
+  open_pos <- start[1] + attr(start, "match.length") - 1L  # position of '{'
+  n        <- nchar(content)
+  depth    <- 1L
+  pos      <- open_pos + 1L
+
+  while (pos <= n && depth > 0L) {
+    ch <- substr(content, pos, pos)
+    if (ch == "{")      depth <- depth + 1L
+    else if (ch == "}") depth <- depth - 1L
+    pos <- pos + 1L
+  }
+
+  if (depth != 0L) return(NA_character_)
+  substr(content, open_pos + 1L, pos - 2L)
+}
+
 # ---------------------------------------------------------------------------
 # docstrace.readme
 # ---------------------------------------------------------------------------
@@ -196,9 +232,10 @@ rule_docstrace_examples_quality <- function() {
 
         has_examples <- grepl("\\\\examples\\{", content, fixed = FALSE)
         if (has_examples) {
-          # Check that the examples block is non-empty
-          ex_match <- regmatches(content, regexpr("\\\\examples\\{([^}]*)\\}", content))
-          if (length(ex_match) > 0 && nchar(trimws(ex_match)) < 20) {
+          # Check that the examples block is non-empty (Issue #10: must
+          # honor brace nesting, not stop at the first '}' encountered).
+          ex_content <- extract_braced_block(content, "examples")
+          if (!is.na(ex_content) && nchar(trimws(ex_content)) < 20) {
             diags[[length(diags) + 1]] <- new_diagnostic(
               rule_id    = "docstrace.examplesQuality",
               severity   = "info",

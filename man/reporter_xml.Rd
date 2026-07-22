@@ -30,6 +30,6 @@ Schema:
 omitted when the diagnostic has none. Built with
 \href{https://xml2.r-lib.org/}{\code{xml2}}, which handles attribute/text escaping,
 so this reporter requires the \code{xml2} package (\code{Suggests}, not a hard
-dependency — see \href{https://github.com/rtrace-dev/rtrace/blob/main/dev/adr/0002-core-architecture.md}{ADR 0002}
+dependency — see \href{https://github.com/RonaldRonnie/Rtrace/blob/main/dev/adr/0002-core-architecture.md}{ADR 0002}
 on keeping the core dependency footprint light).
 }

@@ -96,7 +96,8 @@ cmd_platform_scan <- function(options, positional) {
 #' @noRd
 cmd_datatrace <- function(options, positional) {
   root   <- if (length(positional) > 0) positional[1] else "."
-  result <- run_datatrace_scan(root)
+  config <- resolve_config(root, options)
+  result <- run_datatrace_scan(root, config)
 
   cat(sprintf("DataTrace scan: %s\n", root))
   cat(sprintf("Data files found: %d\n", nrow(result$data_files)))
@@ -123,7 +124,8 @@ cmd_datatrace <- function(options, positional) {
 #' @noRd
 cmd_docstrace <- function(options, positional) {
   root   <- if (length(positional) > 0) positional[1] else "."
-  result <- run_docstrace_scan(root)
+  config <- resolve_config(root, options)
+  result <- run_docstrace_scan(root, config)
 
   cat(sprintf("DocsTrace scan: %s\n", root))
   print(result$score)
@@ -149,7 +151,8 @@ cmd_docstrace <- function(options, positional) {
 #' @noRd
 cmd_pkgqa <- function(options, positional) {
   root   <- if (length(positional) > 0) positional[1] else "."
-  result <- run_packageqa_scan(root)
+  config <- resolve_config(root, options)
+  result <- run_packageqa_scan(root, config)
 
   if (!result$is_package) {
     cat(sprintf("pkgqa: '%s' is not an R package (no DESCRIPTION file).\n", root))

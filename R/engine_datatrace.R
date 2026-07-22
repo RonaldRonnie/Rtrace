@@ -75,10 +75,21 @@ scan_data_files <- function(root, max_rows = 1000L) {
 
     read_result <- tryCatch({
       sep <- if (type == "tsv") "\t" else ","
-      df  <- utils::read.table(p, header = TRUE, sep = sep, nrows = max_rows,
-                                stringsAsFactors = FALSE, fill = TRUE,
-                                comment.char = "", quote = "\"",
-                                fileEncoding = "UTF-8")
+      # "incomplete final line" is emitted for any file not ending in a
+      # newline -- extremely common and not a real parse/encoding problem
+      # (Issue #8), so it is muffled here rather than propagating to the
+      # warning handler below, which treats warnings as read failures.
+      df  <- withCallingHandlers(
+        utils::read.table(p, header = TRUE, sep = sep, nrows = max_rows,
+                           stringsAsFactors = FALSE, fill = TRUE,
+                           comment.char = "", quote = "\"",
+                           fileEncoding = "UTF-8"),
+        warning = function(w) {
+          if (grepl("incomplete final line", conditionMessage(w), fixed = TRUE)) {
+            invokeRestart("muffleWarning")
+          }
+        }
+      )
       list(
         n_cols        = ncol(df),
         n_rows_sample = nrow(df),
@@ -118,11 +129,15 @@ scan_data_files <- function(root, max_rows = 1000L) {
 #' Run the DataTrace engine against a project
 #'
 #' @param root Character scalar project root.
+#' @param config An `rtrace_config` object. Defaults to [default_config()].
+#'   Every registered `datatrace.*` rule runs by default; a `config$rules`
+#'   entry for a rule's id overrides its `enabled`/`severity`/`params`
+#'   (Issue #11).
 #' @return A list with `data_files` (the scan data frame from
 #'   [scan_data_files()]), `diagnostics` (an `rtrace_diagnostic_set`),
 #'   and `score` (a `trace_score`).
 #' @export
-run_datatrace_scan <- function(root = ".") {
+run_datatrace_scan <- function(root = ".", config = default_config()) {
   root       <- normalizePath(root, mustWork = TRUE)
   data_files <- scan_data_files(root)
 
@@ -134,8 +149,25 @@ run_datatrace_scan <- function(root = ".") {
   diags <- new_diagnostic_set()
 
   for (rule in datatrace_rules) {
+    spec <- find_rule_spec(config, rule$id)
+    if (!is.null(spec) && !isTRUE(spec$enabled)) next
+
+    # Only override severity when the user has explicitly configured one for
+    # this rule -- some rules emit diagnostics at multiple severities
+    # (e.g. datatrace.jsonDataset), which a blanket override would collapse.
+    override_severity <- if (!is.null(spec) && !is.na(spec$severity %||% NA_character_)) {
+      spec$severity
+    } else {
+      NULL
+    }
+    params <- if (!is.null(spec)) {
+      utils::modifyList(rule$default_params, spec$params %||% list())
+    } else {
+      rule$default_params
+    }
+
     result <- tryCatch(
-      rule$domain_fns$check_datatrace(data_files, root),
+      rule$domain_fns$check_datatrace(data_files, root, params),
       error = function(e) {
         list(new_diagnostic(
           rule_id = "rule-error", severity = "error", file = "(datatrace-engine)",
@@ -145,7 +177,10 @@ run_datatrace_scan <- function(root = ".") {
     )
     if (length(result) > 0) {
       if (inherits(result, "rtrace_diagnostic")) result <- list(result)
-      diags <- c(diags, new_diagnostic_set(result))
+      if (!is.null(override_severity)) {
+        result <- lapply(result, function(d) { d$severity <- override_severity; d })
+      }
+      diags  <- c(diags, new_diagnostic_set(result))
     }
   }
 

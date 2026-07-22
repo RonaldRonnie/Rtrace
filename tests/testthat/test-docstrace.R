@@ -155,6 +155,47 @@ test_that("docstrace.citationFile is silent when inst/CITATION exists", {
   expect_false("docstrace.citationFile" %in% diag_ids)
 })
 
+# Regression test for Issue #10: a `[^}]*}`-style regex truncates at the
+# *first* closing brace, so a substantive \examples block that opens with
+# any short bracketed token (e.g. `\x{}`) was wrongly flagged as trivial.
+test_that("docstrace.examplesQuality does not fire for a real example block containing nested braces", {
+  rd <- paste(
+    "\\name{add}",
+    "\\title{Add two numbers}",
+    "\\examples{",
+    "\\x{}",
+    "result <- add(1, 2)",
+    "print(result)",
+    "stopifnot(result == 3)",
+    "cat(\"This is a long, real, substantive example block.\\n\")",
+    "}",
+    sep = "\n"
+  )
+  root <- local_project(list(
+    "DESCRIPTION" = "Package: mypkg\nVersion: 0.1.0\nTitle: My Pkg\n",
+    "man/add.Rd"  = rd
+  ))
+  result <- run_docstrace_scan(root)
+  diag_ids <- vapply(result$diagnostics$diagnostics, function(d) d$rule_id, character(1))
+  expect_false("docstrace.examplesQuality" %in% diag_ids)
+})
+
+test_that("docstrace.examplesQuality fires for a genuinely empty examples block", {
+  rd <- paste(
+    "\\name{add}",
+    "\\title{Add two numbers}",
+    "\\examples{}",
+    sep = "\n"
+  )
+  root <- local_project(list(
+    "DESCRIPTION" = "Package: mypkg\nVersion: 0.1.0\nTitle: My Pkg\n",
+    "man/add.Rd"  = rd
+  ))
+  result <- run_docstrace_scan(root)
+  diag_ids <- vapply(result$diagnostics$diagnostics, function(d) d$rule_id, character(1))
+  expect_true("docstrace.examplesQuality" %in% diag_ids)
+})
+
 test_that("run_docstrace_scan produces high score for a well-documented package", {
   readme_content <- paste(
     "# bestpkg",

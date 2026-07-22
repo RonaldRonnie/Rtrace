@@ -60,7 +60,7 @@ Rule <- R6::R6Class("Rule",
 #' Register a rule in the global rule registry
 #'
 #' Built-in rules call this at package load time. Third-party packages may
-#' call the exported `rtrace::register_rule()` from their own `.onLoad()`
+#' call the exported `RTrace::register_rule()` from their own `.onLoad()`
 #' to add rules without forking RTrace (see ADR 0002's plugin-system
 #' section).
 #'

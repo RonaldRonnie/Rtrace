@@ -8,7 +8,7 @@
 #' built-in rules read cross-file state (the dependency graph, all test
 #' files for `testing.missingTests`, etc.) and a stale per-file diagnostic
 #' cache could silently miss a violation introduced by a *different* file
-#' changing. See [dev/roadmap.md](https://github.com/rtrace-dev/rtrace/blob/main/dev/roadmap.md)
+#' changing. See [dev/roadmap.md](https://github.com/RonaldRonnie/Rtrace/blob/main/dev/roadmap.md)
 #' for the rule-scope model a future per-rule diagnostic cache would need.
 #'
 #' Caching is opt-in (`use_cache = TRUE` to [build_context()]/[run_scan()],

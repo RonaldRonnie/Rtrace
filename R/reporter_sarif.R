@@ -67,7 +67,7 @@ reporter_sarif <- function(diagnostics, pretty = TRUE) {
       tool = list(
         driver = list(
           name = "RTrace",
-          informationUri = "https://github.com/rtrace-dev/rtrace",
+          informationUri = "https://github.com/RonaldRonnie/Rtrace",
           version = tryCatch(as.character(utils::packageVersion("RTrace")), error = function(e) "0.0.0.dev"),
           rules = rules_meta
         )

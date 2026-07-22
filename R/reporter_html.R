@@ -3,7 +3,7 @@
 #' Diagnostic `file`, `message`, and `suggestion` fields originate from
 #' scanned source code (file paths, string literals quoted back into
 #' messages), so they must be escaped before being embedded in a generated
-#' HTML report — see [SECURITY.md](https://github.com/rtrace-dev/rtrace/blob/main/SECURITY.md).
+#' HTML report — see [SECURITY.md](https://github.com/RonaldRonnie/Rtrace/blob/main/SECURITY.md).
 #'
 #' @param x Character vector.
 #' @return Character vector with `& < > " '` replaced by HTML entities.

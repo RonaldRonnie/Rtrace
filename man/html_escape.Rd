@@ -16,5 +16,5 @@ Character vector with \verb{& < > " '} replaced by HTML entities.
 Diagnostic \code{file}, \code{message}, and \code{suggestion} fields originate from
 scanned source code (file paths, string literals quoted back into
 messages), so they must be escaped before being embedded in a generated
-HTML report — see \href{https://github.com/rtrace-dev/rtrace/blob/main/SECURITY.md}{SECURITY.md}.
+HTML report — see \href{https://github.com/RonaldRonnie/Rtrace/blob/main/SECURITY.md}{SECURITY.md}.
 }

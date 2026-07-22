@@ -4,17 +4,41 @@
 #' by [validate_config()] to reject typos in `rtrace.yml` at validation time
 #' rather than silently ignoring them at scan time.
 #'
+#' Includes domain-specific rules (`datatrace.*`, `docstrace.*`,
+#' `packageqa.*`, `reproducibility.*`). Those don't fire via the standard
+#' [run_rules()] pass -- they run via their dedicated engines
+#' ([run_datatrace_scan()], [run_docstrace_scan()], etc.) -- but each engine
+#' runs every registered rule of its prefix by default and consults
+#' `rtrace.yml` as an opt-out override, so their types must validate too
+#' (Issue #11).
+#'
 #' @return Character vector of registered rule ids.
 #' @export
 known_rule_types <- function() {
-  all_ids <- names(rtrace_env$rule_registry)
-  # Exclude domain-specific rules that are not valid in rtrace.yml and do
-  # not fire during a standard run_scan() pass (they run via dedicated
-  # engines: run_datatrace_scan(), run_docstrace_scan(), etc.).
-  domain_prefixes <- c("datatrace\\.", "docstrace\\.", "packageqa\\.",
-                       "reproducibility\\.")
-  pattern <- paste0("^(", paste(domain_prefixes, collapse = "|"), ")")
-  all_ids[!grepl(pattern, all_ids)]
+  names(rtrace_env$rule_registry)
+}
+
+#' Find a rule's configuration entry, if any
+#'
+#' The core `rtrace.*` rules use an opt-in model: [run_rules()] only runs
+#' rules explicitly declared in `config$rules`. Domain engines
+#' (reproducibility, datatrace, docstrace, packageqa) use an opt-out model
+#' instead -- every registered rule of their prefix runs by default, and a
+#' `config$rules` entry (if present) overrides its `enabled`/`severity`/
+#' `params` for that one rule.
+#'
+#' @param config An `rtrace_config` object.
+#' @param rule_id Character scalar rule id (e.g.
+#'   `"reproducibility.externalDownload"`).
+#' @return The matching rule spec (`list(type=, enabled=, severity=,
+#'   params=)`), or `NULL` if `rule_id` has no entry in `config$rules`.
+#' @keywords internal
+#' @noRd
+find_rule_spec <- function(config, rule_id) {
+  for (spec in config$rules %||% list()) {
+    if (identical(spec$type, rule_id)) return(spec)
+  }
+  NULL
 }
 
 #' Build the default RTrace configuration

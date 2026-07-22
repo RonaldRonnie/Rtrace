@@ -6,7 +6,7 @@ RTrace is not yet on CRAN.
 
 ```r
 # install.packages("pak")
-pak::pak("rtrace-dev/rtrace")
+pak::pak("RonaldRonnie/Rtrace")
 ```
 
 ## Scan a project with zero configuration

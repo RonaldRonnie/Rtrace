@@ -77,6 +77,7 @@
     as.character(utils::packageVersion("RTrace")),
     error = function(e) "0.2.0.dev"
   )
+  rtrace_env$platform_version <- pkg_version
 
   register_module(list(
     id          = "rtrace",
@@ -118,7 +119,7 @@
     description = "Evaluates documentation completeness and quality.",
     languages   = "R",
     scan_fn     = function(root, config) {
-      run_docstrace_scan(root)$diagnostics
+      run_docstrace_scan(root, config %||% default_config())$diagnostics
     },
     score_fn    = function(diags) {
       s <- compute_score(diags, error_penalty = 12, warning_penalty = 4, info_penalty = 1)
@@ -134,7 +135,7 @@
     description = "Evaluates R package metadata and CRAN convention compliance.",
     languages   = "R",
     scan_fn     = function(root, config) {
-      run_packageqa_scan(root)$diagnostics
+      run_packageqa_scan(root, config %||% default_config())$diagnostics
     },
     score_fn    = function(diags) {
       s <- compute_score(diags, error_penalty = 12, warning_penalty = 5, info_penalty = 1)
@@ -150,7 +151,7 @@
     description = "Evaluates quality and FAIR-compliance of research data files.",
     languages   = "data",
     scan_fn     = function(root, config) {
-      run_datatrace_scan(root)$diagnostics
+      run_datatrace_scan(root, config %||% default_config())$diagnostics
     },
     score_fn    = function(diags) {
       s <- compute_score(diags, error_penalty = 8, warning_penalty = 3, info_penalty = 1)
