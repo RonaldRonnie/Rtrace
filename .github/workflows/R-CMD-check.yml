@@ -43,7 +43,7 @@ jobs:
       - name: Install package dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          pak-version: none
+          pak-version: repo
           extra-packages: any::rcmdcheck
           needs: check
 
